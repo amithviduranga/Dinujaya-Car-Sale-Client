@@ -20,7 +20,7 @@ export default function Registration() {
 
   const onFinish = async (values) => {
     try {
-      const response = await axios.post(`${apiUrl}/auth/register`, values); 
+      const response = await axios.post(`${apiUrl}auth/register`, values); 
       if (response.status === 200) {
         message.success("Registration successful. Please login.");
      
@@ -31,9 +31,9 @@ export default function Registration() {
       }
     } catch (error) {
       // Axios error handling
-      if (error.response && error.response.data === "Username or Email already exists") {
+      if (error.response && error.response.data === "Username is taken!") {
         // Bad request error
-        message.error("Username or Email already exists.Please user another username");
+        message.error("Username already exists.Please user another username");
       } else {
         // Other errors
         console.error("Error:", error);

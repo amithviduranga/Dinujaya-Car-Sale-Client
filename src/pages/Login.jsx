@@ -1,17 +1,43 @@
 import React from "react";
-import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
+import { Button, Checkbox, Form, Grid, Input, theme, Typography,message } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
 const { Text, Title, Link } = Typography;
-
+const apiUrl = process.env.REACT_APP_API_URL;
 export default function App() {
   const { token } = useToken();
   const screens = useBreakpoint();
+  const navigate = useNavigate(); 
+  
 
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+  const onFinish = async (values) => {
+    try {
+      const response = await axios.post(`${apiUrl}auth/login`, {
+        username: values.username,
+        password: values.password,
+      });
+      const { accessToken ,role } = response.data;
+
+      if(role ==="ADMIN"){
+        navigate("admin/dashboard")
+        message.success(`Welcome ${values.username},   Login successful!`);
+      }
+      // Store the token (e.g., in localStorage)
+      localStorage.setItem("token", accessToken);
+   
+
+     console.log("res",response)
+
+
+
+      // Redirect or perform other actions
+    } catch (error) {
+      message.error("Login failed! Please check your credentials.");
+    }
   };
 
   const styles = {
@@ -104,10 +130,10 @@ export default function App() {
           requiredMark="optional"
         >
           <Form.Item
-            name="email"
+            name="username"
             rules={[
               {
-                type: "email",
+                type: "username",
                 required: true,
                 message: "Please input your Email!",
               },
@@ -115,7 +141,7 @@ export default function App() {
           >
             <Input
               prefix={<MailOutlined />}
-              placeholder="Email"
+              placeholder="username"
               style={styles.input}
             />
           </Form.Item>

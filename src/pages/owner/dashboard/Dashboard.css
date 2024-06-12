@@ -1,0 +1,59 @@
+
+.header{
+    padding-top: 1px;
+    background: #fff;
+}
+.content{
+
+    margin:24px 16px;
+    padding: 20px;
+}
+.triger-btn{
+
+    font-size:16px;
+    width: 50px;
+    height: 50px;
+    position:fixed;
+    bottom: 10px;
+    left: 10px;
+}
+.sider{
+
+    height:100vh;
+    position:sticky !important;
+    left:0;
+    bottom:0;
+    top: 0;
+
+}
+.logo{
+    color: #4f6f52;
+    margin:30px 0;
+    font-size:1.5rem ;
+}
+.menu-bar{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+    font-weight:600;
+
+}
+.ant-menu-item-selected{
+    background-color: #4b92fd !important;
+    color: #f8f8f8 !important;
+}
+/* header */
+.header-icon{
+    background-color: #dadada;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 15px;
+    color: #4b92fd;
+    cursor: pointer;
+}
+
+
+.ant-btn:hover{
+    color :#4b92fd !important;
+    border-color:#dadada !important;
+}
