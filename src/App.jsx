@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import OwnerDashboard from './pages/owner/dashboard/OwnerDashboard.jsx';
+import Main from './pages/global/Main.jsx'
 
 function App() {
   // Set global configuration for the message component
@@ -20,8 +21,11 @@ message.config({
         <ToastContainer />
         
         <Routes>
-          <Route path='/' element={<Login />} />
-          <Route path='/register' element={<Register />} />
+        <Route path='/' element={<Main />} />
+
+        {/* Admin Routes */}
+          <Route path='/admin/login' element={<Login />} />
+          <Route path='/admin/register' element={<Register />} />
           <Route path='/admin/dashboard' element={<OwnerDashboard />} />
         </Routes>
       </div>

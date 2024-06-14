@@ -23,7 +23,7 @@ export default function App() {
       const { accessToken ,role } = response.data;
 
       if(role ==="ADMIN"){
-        navigate("admin/dashboard")
+        navigate("/admin/dashboard")
         message.success(`Welcome ${values.username},   Login successful!`);
       }
       // Store the token (e.g., in localStorage)

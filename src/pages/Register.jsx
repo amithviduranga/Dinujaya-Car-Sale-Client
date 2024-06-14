@@ -2,9 +2,10 @@
 import React from "react";
 import { Button, Checkbox, Form, Input, Typography,theme,Grid,message } from "antd";
 import { LockOutlined, MailOutlined,UserOutlined ,EnvironmentOutlined ,PhoneOutlined} from "@ant-design/icons";
-import { Route, useHistory } from 'react-router-dom';
+import { Navigate, Route, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from 'react-toastify';
+import Login from './Login'
 import 'react-toastify/dist/ReactToastify.css';
 
 const { useToken } = theme;
@@ -12,7 +13,7 @@ const { useBreakpoint } = Grid;
 const { Text, Title, Link } = Typography;
 
 export default function Registration() {
- 
+  const navigate = useNavigate();
   const apiUrl = process.env.REACT_APP_API_URL;
 
   const { token } = useToken();
@@ -20,14 +21,15 @@ export default function Registration() {
 
   const onFinish = async (values) => {
     try {
-      const response = await axios.post(`${apiUrl}auth/register`, values); 
+      const response = await axios.post(`${apiUrl}/auth/register`, values); 
       if (response.status === 200) {
         message.success("Registration successful. Please login.");
-     
+       navigate("/login")
         
       } else {
         // Handle other status codes
         console.log("Response status:", response.status);
+
       }
     } catch (error) {
       // Axios error handling
