@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Table, Select, Card } from 'antd';
+import React, { useState ,useEffect} from 'react';
+import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table } from 'antd';
 import { CarOutlined, ToolOutlined, UnorderedListOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import axios from 'axios';
+import QRCode from 'qrcode';
+import dayjs from 'dayjs';
 
 const { Header, Content, Footer } = Layout;
 const { Option } = Select;
+const apiUrl = process.env.REACT_APP_API_URL;
+
 
 const NavigationBar = ({ onMenuClick }) => (
   <Menu theme="light" mode="horizontal" defaultSelectedKeys={['list-new-vehicle']} style={{ lineHeight: '64px', borderRadius: '8px' }}>
@@ -14,26 +19,95 @@ const NavigationBar = ({ onMenuClick }) => (
       Show Listed Vehicles
     </Menu.Item>
     <Menu.Item key="spare-parts" icon={<ToolOutlined />}>
-      Spare Parts
+      Spare Parts Reccomondation
     </Menu.Item>
   </Menu>
 );
 
 const ListNewVehicleForm = () => {
-  const onFinish = values => {
+  const [form] = Form.useForm();
+  const [mainImage, setMainImage] = useState(null);
+  const [additionalImages, setAdditionalImages] = useState([]);
+  const [qrCodeData, setQrCodeData] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [mainImagePreview, setMainImagePreview] = useState(null);
+  const [additionalImagesPreview, setAdditionalImagesPreview] = useState([]);
+
+  const onFinish = async (values) => {
     console.log('Form values:', values);
-    // Logic to handle form submission
+
+    const formData = new FormData();
+    formData.append('vehicle', new Blob([JSON.stringify(values)], { type: 'application/json' }));
+    if (mainImage) {
+      formData.append('mainImage', mainImage);
+    }
+    additionalImages.forEach((image, index) => {
+      formData.append('images', image);
+    });
+
+    try {
+      console.log(formData);
+      const response = await axios.post(`${apiUrl}vehicle/saveVehicleDetails`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Response:', response.data);
+      const vehicleId = response.data.id;  // Assuming the response contains the vehicle ID
+
+      // Generate QR code
+      const qrCodeUrl = `${apiUrl}vehicle/details/${vehicleId}`;
+      const qrCode = await QRCode.toDataURL(qrCodeUrl);
+
+      setQrCodeData(qrCode);
+      setIsModalVisible(true);
+
+    } catch (error) {
+      console.error('Error uploading vehicle details:', error);
+      alert('Failed to list vehicle.');
+    }
   };
 
-  // Dummy function for handling file uploads
-  const handleUpload = info => {
-    console.log(info.fileList);
+  const handleMainImageUpload = ({ file }) => {
+    setMainImage(file);
+    setMainImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleAdditionalImagesUpload = ({ fileList }) => {
+    setAdditionalImages(fileList.map(file => file.originFileObj));
+  
+    // Update previews based on fileList
+    const previews = fileList.map(file => URL.createObjectURL(file.originFileObj));
+  
+    setAdditionalImagesPreview(previews);
+  };
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleDownloadQRCode = () => {
+    if (qrCodeData) {
+      const link = document.createElement('a');
+      link.href = qrCodeData;
+      link.download = 'vehicle-qr-code.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      // Close the modal
+      setIsModalVisible(false);
+      // Reset form fields
+      form.resetFields();
+      // Clear images state
+      setMainImage(null);
+      setAdditionalImages([]);
+      setQrCodeData(null);
+    }
   };
 
   return (
     <div style={{ padding: '24px', background: '#fff', borderRadius: '8px' }}>
       <h1>List New Vehicle</h1>
-      <Form layout="vertical" onFinish={onFinish}>
+      <Form form={form} layout="vertical" onFinish={onFinish}>
         <Card type="inner" title="Basic Vehicle Details">
           <Row gutter={16}>
             <Col span={12}>
@@ -85,83 +159,130 @@ const ListNewVehicleForm = () => {
         </Card>
 
         <Card type="inner" title="Upload Photos" style={{ borderRadius: '8px', marginTop: '24px' }}>
-          <div style={{  borderRadius: '8px', marginBottom: '24px' }}>
+         
+        <div style={{ marginBottom: '24px' }}>
             <h4>Main Image</h4>
             <Upload
-              name="avatar"
+              name="mainImage"
               listType="picture-card"
               className="avatar-uploader"
-              showUploadList={false}
-              beforeUpload={() => false} // Prevent actual upload for demonstration
-              onChange={handleUpload}
-              style={{ width: '220px'}}
+              fileList={mainImage ? [{ uid: '-1', name: 'image.png', status: 'done', url: mainImagePreview }] : []}
+              showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+              beforeUpload={() => false}
+              onChange={handleMainImageUpload}
+              style={{ width: '100%', height: '100%' }}
             >
-              <div style={{ width: '220px',  height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Button icon={<UploadOutlined />} style={{  background: '#f0f2f5'  }}/>
-                
-              
-              </div>
+              {mainImagePreview ? null : (
+                <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Button icon={<UploadOutlined />} style={{ background: '#f0f2f5', width: '100%', height: '100%' }} />
+                </div>
+              )}
             </Upload>
-            <Row gutter={16} style={{ marginTop: '24px' }}>
-              {[1, 2, 3, 4, 5].map(index => (
-                <Col key={index} span={4}>
-                  <h4>Additional Image {index}</h4>
-                  <Upload
-                    name={`additionalImage${index}`}
-                    listType="picture-card"
-                    className="avatar-uploader"
-                    showUploadList={false}
-                    beforeUpload={() => false} // Prevent actual upload for demonstration
-                    onChange={handleUpload}
-                  >
-                    <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <Button icon={<UploadOutlined />} style={{ background: '#f0f2f5',width: '100%', height: '100%' }}>
-                        
-                      </Button>
-                    </div>
-                  </Upload>
-                </Col>
-              ))}
-            </Row>
           </div>
+          <Row gutter={12} style={{ marginTop: '24px' }}>
+            {[1, 2, 3, 4, 5].map(index => (
+              <Col key={index} span={4}>
+                <h4>Additional Image {index}</h4>
+                <Upload
+  name={`additionalImage${index}`}
+  listType="picture-card"
+  className="avatar-uploader"
+  fileList={additionalImagesPreview[index] ? [{ uid: `-${index}`, name: 'image.png', status: 'done', url: additionalImagesPreview[index] }] : []}
+  showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+  beforeUpload={() => false} // Prevent actual upload for demonstration
+  onChange={handleAdditionalImagesUpload}
+  style={{ width: '100%', height: '100%' }}
+>
+  {additionalImagesPreview[index] ? null : (
+    <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Button icon={<UploadOutlined />} style={{ background: '#f0f2f5', width: '100%', height: '100%' }} />
+    </div>
+  )}
+</Upload>
+              </Col>
+            ))}
+          </Row>
+      
         </Card>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">Submit</Button>
+          <Row justify="end">
+            <Col>
+              <Button type="primary" htmlType="submit" style={{ marginTop: 30, marginRight: 40 }}>
+                List Vehicle
+              </Button>
+            </Col>
+          </Row>
         </Form.Item>
       </Form>
+      <Modal
+  title="Scan This QR to see Full details of Vehicle"
+  visible={isModalVisible}
+  onCancel={handleModalClose}
+  footer={null}  // Remove default footer
+>
+  {qrCodeData && (
+    <div style={{ textAlign: 'center' }}>
+      <Image style={{ width: 300 }} src={qrCodeData} alt="QR Code" />
+      <div style={{ marginTop: '20px', marginBottom:'20px' }}>
+        <Button key="download" style={{background:'#1890FF' , color: '#FFFFFF',fontSize:17 }} onClick={handleDownloadQRCode}>
+          Download QR Code
+        </Button>
+      </div>
+    </div>
+  )}
+</Modal>
     </div>
   );
 };
 
 const ShowListedVehicles = () => {
-  const vehicles = [
-    // Sample data
-    { id: 1, make: 'Toyota', model: 'Corolla', year: 2020, price: 15000, mileage: 20000 },
-    { id: 2, make: 'Honda', model: 'Civic', year: 2019, price: 14000, mileage: 25000 },
-  ];
 
-  const handleEdit = id => {
+  const [vehicles, setVehicles] = useState([]);
+  useEffect(() => {
+    fetchVehicles(); // Fetch vehicles data when component mounts
+  }, []);
+
+  const fetchVehicles = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}vehicle`); // Replace 'your_endpoint_url' with your actual endpoint
+      setVehicles(response.data); // Update vehicles state with data from API response
+    } catch (error) {
+      console.error('Error fetching vehicles:', error);
+    }
+  };
+
+  const handleEdit = (id) => {
     console.log('Edit vehicle', id);
   };
 
-  const handleDelete = id => {
+  const handleDelete = (id) => {
     console.log('Delete vehicle', id);
   };
 
   const columns = [
-    { title: 'Make', dataIndex: 'make', key: 'make' },
-    { title: 'Model', dataIndex: 'model', key: 'model' },
-    { title: 'Year', dataIndex: 'year', key: 'year' },
-    { title: 'Price', dataIndex: 'price', key: 'price' },
-    { title: 'Mileage', dataIndex: 'mileage', key: 'mileage' },
+    { title: 'Reg No', dataIndex: '', key: '' },
+    { title: 'Model Name', dataIndex: 'modelName', key: 'modelName' },
+    { title: 'Brand Name', dataIndex: 'brandName', key: 'brandName' },
+    { title: 'Color', dataIndex: 'color', key: 'color' },
+    { title: 'Condition', dataIndex: 'vehicleCondition', key: 'vehicleCondition' },
+    { title: 'Fuel Type', dataIndex: 'fuelType', key: 'fuelType' },
+    { title: 'Manufacture Year', dataIndex: 'manufactureYear', key: 'manufactureYear' },
+    { title: 'Milage (Km)', dataIndex: 'mileage', key: 'mileage' },
+    { title: 'Price(LKR)', dataIndex: 'price', key: 'price' },
+    { title: 'Listed On', dataIndex: 'createdOn', key: 'createdOn',
+      render: (createdOn) => dayjs(createdOn).format('YYYY-MM-DD'),
+     },
+    {title: 'Listed By', dataIndex: 'createdBy', key: 'createdBy' },
+   
+    {title: 'Modified By', dataIndex: 'modifiedBy', key: 'createdBy' },
     {
       title: 'Actions',
       key: 'actions',
       render: (text, record) => (
         <span>
-          <Button icon={<EditOutlined />} onClick={() => handleEdit(record.id)}>Edit</Button>
-          <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}>Delete</Button>
+          <Button icon={<EditOutlined />} onClick={() => handleEdit(record.id)}></Button>
+          <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}></Button>
         </span>
       ),
     },
@@ -184,6 +305,8 @@ const ListNewVehicle = () => {
         return <ListNewVehicleForm />;
       case 'show-listed-vehicles':
         return <ShowListedVehicles />;
+        case 'spare-parts':
+          return <ShowListedVehicles />;  
       default:
         return <ListNewVehicleForm />;
     }
