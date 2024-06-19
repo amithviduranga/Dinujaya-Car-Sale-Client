@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import OwnerDashboard from './pages/owner/dashboard/OwnerDashboard.jsx';
 import Main from './pages/global/Main.jsx'
+import './index.css';
 
 function App() {
   // Set global configuration for the message component

@@ -2,7 +2,7 @@ import React from "react";
 import {Flex, Menu} from "antd"
 import {FaLeaf} from 'react-icons/fa6'
 import './Dashboard.css'
-import { UserOutlined ,ProfileOutlined,LoginOutlined,UnorderedListOutlined } from "@ant-design/icons";
+import { UserOutlined ,ProfileOutlined,LoginOutlined,UnorderedListOutlined,ToolOutlined } from "@ant-design/icons";
 
 const Sidebar= ({ onMenuClick })=>{
 
@@ -28,9 +28,14 @@ const Sidebar= ({ onMenuClick })=>{
      },
      {
       key:'3',
-      icon:<UnorderedListOutlined />,
-      label:'Advertiesments'
+      icon:<ToolOutlined />,
+      label:'Spare Parts'
    },
+   {
+    key:'4',
+    icon:<UnorderedListOutlined />,
+    label:'Advertiesments'
+ },
      {
     
       icon:<LoginOutlined />,

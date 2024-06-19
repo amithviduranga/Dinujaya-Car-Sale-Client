@@ -6,6 +6,7 @@ import CustomHeader from './Header';
 import Advertiesment from './pages/Advertiesment';
 import Dashboard from './pages/Dashboard';
 import ListVehicles from './pages/ListVehicles';
+import SparePartManagement from './pages/SparePartManagement';
 import './Dashboard.css'
 
 const {Sider,Header,Content} = Layout;
@@ -22,10 +23,9 @@ const OwnerDashboard = () =>{
         case '2':
            return <ListVehicles />;
         case '3':
-           return <Advertiesment />;
+           return <SparePartManagement />;
         case '4':
-          // Handle logout if necessary
-          // return <div>Logged Out</div>;
+         return <Advertiesment />;
         default:
           // return <Dashboard />;
       }

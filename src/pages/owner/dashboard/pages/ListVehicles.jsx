@@ -18,7 +18,7 @@ const NavigationBar = ({ onMenuClick }) => (
     <Menu.Item key="show-listed-vehicles" icon={<UnorderedListOutlined />} onClick={() => onMenuClick('show-listed-vehicles')}>
       Show Listed Vehicles
     </Menu.Item>
-    <Menu.Item key="spare-parts" icon={<ToolOutlined />}>
+    <Menu.Item key="spare-parts" icon={<ToolOutlined />} onClick={() => onMenuClick('spare-parts')}>
       Spare Parts Reccomondation
     </Menu.Item>
   </Menu>
@@ -117,6 +117,21 @@ const ListNewVehicleForm = () => {
               <Form.Item name="brandName" label="Brand Name" rules={[{ required: true, message: 'Please enter the brand name' }]}>
                 <Input />
               </Form.Item>
+
+              <Form.Item name="provinceCode" label="Province Code" rules={[{ required: true, message: 'Please enter the province code' }]}>
+              <Select placeholder="Select Province code of vehicle">
+                  <Option value="CP">CP</Option>
+                  <Option value="EP">EP</Option>
+                  <Option value="NC">NC</Option>
+                  <Option value="NW">NW</Option>
+                  <Option value="NP">NP</Option>
+                  <Option value="SG">SG</Option>
+                  <Option value="SP">SP</Option>
+                  <Option value="UP">UP</Option>
+                  <Option value="WP">WP</Option>
+                
+                </Select>
+              </Form.Item>
               <Form.Item name="manufactureYear" label="Manufacture Year" rules={[{ required: true, message: 'Please enter the manufacture year' }]}>
                 <InputNumber min={1886} max={new Date().getFullYear()} style={{ width: '100%' }} />
               </Form.Item>
@@ -143,6 +158,9 @@ const ListNewVehicleForm = () => {
                   <Option value="Diesel">Diesel</Option>
                   <Option value="Electric">Electric</Option>
                 </Select>
+              </Form.Item>
+              <Form.Item name="registrationNumber" label="Registration Number" rules={[{ required: true, message: 'Please enter the Registration number' }]}>
+                <Input placeholder="Eg : AAA-5678" />
               </Form.Item>
               <Form.Item name="condition" label="Condition">
                 <Select placeholder="Select condition status">
@@ -218,7 +236,6 @@ const ListNewVehicleForm = () => {
       <Modal
   title="Scan This QR to see Full details of Vehicle"
   visible={isModalVisible}
-  onCancel={handleModalClose}
   footer={null}  // Remove default footer
 >
   {qrCodeData && (
@@ -261,7 +278,8 @@ const ShowListedVehicles = () => {
   };
 
   const columns = [
-    { title: 'Reg No', dataIndex: '', key: '' },
+    { title: 'Reg No', dataIndex: 'registrationNumber', key: 'registrationNumber' },
+    { title: 'Province Code', dataIndex: 'provinceCode', key: 'provinceCode' },
     { title: 'Model Name', dataIndex: 'modelName', key: 'modelName' },
     { title: 'Brand Name', dataIndex: 'brandName', key: 'brandName' },
     { title: 'Color', dataIndex: 'color', key: 'color' },
@@ -296,6 +314,189 @@ const ShowListedVehicles = () => {
   );
 };
 
+//-------------------------Spare part reccomondation section -----------------------
+
+const SparePartsRecommendation = () => {
+  const [form] = Form.useForm();
+  const [vehicles, setVehicles] = useState([]);
+  const [spareParts, setSpareParts] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+
+  useEffect(() => {
+    fetchVehicles();
+    fetchSpareParts();
+    fetchRecommendations();
+  }, []);
+
+  const fetchVehicles = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}vehicle`); // Fetch vehicles from API
+      setVehicles(response.data);
+    } catch (error) {
+      console.error('Error fetching vehicles:', error);
+    }
+  };
+
+  console.log("vrrrr",vehicles)
+
+  const fetchSpareParts = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}spareParts`); // Fetch spare parts from API
+      setSpareParts(response.data);
+    } catch (error) {
+      console.error('Error fetching spare parts:', error);
+    }
+  };
+
+  const fetchRecommendations = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}recommendations`); // Fetch recommendations from API
+      setRecommendations(response.data);
+    } catch (error) {
+      console.error('Error fetching recommendations:', error);
+    }
+  };
+
+  const fetchVehicleDetails = async (id) => {
+    try {
+      console.log("vehicle id",id)
+      const response = await axios.get(`${apiUrl}vehicle/${id}`); // Replace with actual endpoint
+      setSelectedVehicle(response.data);
+    } catch (error) {
+      console.error('Error fetching vehicle details:', error);
+    }
+  };
+
+  const handleVehicleChange = (value) => {
+    console.log("ccccccc", value)
+    fetchVehicleDetails(value.key);
+  };
+
+  const onFinish = async (values) => {
+    try {
+      const response = await axios.post(`${apiUrl}recommendations`, values); // Save recommendation to API
+      console.log('Recommendation saved:', response.data);
+      fetchRecommendations(); // Refresh recommendations list
+    } catch (error) {
+      console.error('Error saving recommendation:', error);
+      alert('Failed to recommend spare part.');
+    }
+  };
+
+  const getImageUrlFromBase64 = (base64String) => {
+    return `data:image/jpeg;base64,${base64String}`; // Assuming the image is JPEG, adjust if different
+  };
+
+  const columns = [
+    { title: 'Vehicle Reg No', dataIndex: 'vehicleRegNo', key: 'vehicleRegNo' },
+    { title: 'Spare Part', dataIndex: 'sparePart', key: 'sparePart' },
+    { title: 'Recommendation', dataIndex: 'recommendation', key: 'recommendation' },
+  ];
+
+  return (
+    <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', marginTop: '24px' }}>
+      <h1 style={{ marginBottom:50 }}>Spare Parts Recommendation</h1>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form form={form} layout="vertical" onFinish={onFinish}>
+            <Form.Item
+              name="vehicleRegNo"
+              label="Vehicle Registration Number"
+              rules={[{ required: true, message: 'Please select a vehicle' }]}
+            >
+              <Select
+                showSearch
+                placeholder="Select a vehicle"
+                onChange={handleVehicleChange}
+                labelInValue
+              >
+                {vehicles.map((vehicle) => (
+                  <Select.Option key={vehicle.id} value={vehicle.id} label={vehicle.registrationNumber}>
+                    {vehicle.registrationNumber}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="sparePart"
+              label="Required Spare Part"
+              rules={[{ required: true, message: 'Please enter the required spare part' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="recommendation"
+              label="Recommend a Spare Part from Stock"
+              rules={[{ required: true, message: 'Please select a spare part' }]}
+            >
+              <Select placeholder="Select a spare part">
+                {spareParts.map((part) => (
+                  <Select.Option key={part.id} value={part.name}>
+                    {part.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Add Recommendation
+              </Button>
+            </Form.Item>
+          </Form>
+        </Col>
+        <Col span={12}>
+          {selectedVehicle ? (
+            <Card title="Preview Vehicle" bordered={true} style={{ textAlign: 'center', fontSize: '20px' }}>
+              <Row gutter={16}>
+                <Col span={12} style={{ textAlign: 'center' }}>
+                  {/* Display the main image */}
+                  {selectedVehicle.images.map(image => {
+                    if (image.mainImage) {
+                      const imageUrl = getImageUrlFromBase64(image.data); // Convert base64 to image URL
+                      return (
+                        <div key={image.id} style={{ marginTop:15 , position: 'relative' }}>
+                        <Image
+                          width={300}
+                          src={imageUrl}
+                          alt={selectedVehicle.modelName}
+                          style={{ border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
+                        />
+                        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0, 0, 0, 0.5)', display: 'none' }}></div>
+                      </div>
+                      );
+                    }
+                    return null; // Handle case where no main image is found
+                  })}
+                </Col>
+                <Col span={12} style={{ fontSize: 20, textAlign: 'left' }}>
+                  {/* Display vehicle details */}
+                  <p><strong>Model Name:</strong> {selectedVehicle.modelName}</p>
+                  <p><strong>Brand Name:</strong> {selectedVehicle.brandName}</p>
+                  <p><strong>Manufacture Year:</strong> {selectedVehicle.manufactureYear}</p>
+                  <p><strong>Price:</strong> {selectedVehicle.price}</p>
+                  <p><strong>Mileage:</strong> {selectedVehicle.mileage}</p>
+                </Col>
+              </Row>
+            </Card>
+          ) : (
+            <Card title="Vehicle Details" bordered={true} style={{ textAlign: 'center', fontSize: '20px' }}>
+              <p>Select a vehicle to see its details here.</p>
+            </Card>
+          )}
+          
+        </Col>
+    
+      </Row>
+      {selectedVehicle && (
+            <Table columns={columns} dataSource={recommendations} pagination={false} style={{ marginTop: '24px' }} />
+          )}
+    </div>
+  );
+};
+
+//---------------sparepart reccomondation section end------------------------------
+
 const ListNewVehicle = () => {
   const [selectedMenu, setSelectedMenu] = useState('list-new-vehicle');
 
@@ -306,7 +507,7 @@ const ListNewVehicle = () => {
       case 'show-listed-vehicles':
         return <ShowListedVehicles />;
         case 'spare-parts':
-          return <ShowListedVehicles />;  
+          return <SparePartsRecommendation  />;  
       default:
         return <ListNewVehicleForm />;
     }
