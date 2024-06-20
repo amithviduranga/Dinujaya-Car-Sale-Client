@@ -2,17 +2,17 @@
 import React from 'react';
 import { Layout } from 'antd';
 import NavigationBar from './components/Navigationbar';
-
+import MainPage from './MainPage';
 const { Header, Content, Footer } = Layout;
 
 const Main = () => (
     <Layout>
-    <Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
+   
       <NavigationBar />
-    </Header>
-    <Content style={{ padding: '0 50px', marginTop: 64 }}>
+   
+    <Content style={{ padding: '0 50px', marginTop: 0 }}>
       <div style={{ padding: 24, minHeight: 380 }}>
-        {/* Main content will go here */}
+       <MainPage />
       </div>
     </Content>
     <Footer style={{ textAlign: 'center' }}>Ant Design ©2024 Created by Ant UED</Footer>

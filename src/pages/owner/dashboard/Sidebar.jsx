@@ -3,14 +3,15 @@ import {Flex, Menu} from "antd"
 import {FaLeaf} from 'react-icons/fa6'
 import './Dashboard.css'
 import { UserOutlined ,ProfileOutlined,LoginOutlined,UnorderedListOutlined,ToolOutlined } from "@ant-design/icons";
+import  Logoimage from '../../../asserts/Dashboard Logo.png'
 
 const Sidebar= ({ onMenuClick })=>{
-
+  
     return(
      <>
        <Flex align="center" justify="center">
          <div className="logo">
-        <FaLeaf/>
+         <img src={Logoimage} alt="Logo" style={{ width: '100px', height: '70px' }} />
          </div>
        </Flex>
 

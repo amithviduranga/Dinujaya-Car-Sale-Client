@@ -1,5 +1,5 @@
 import React, { useState ,useEffect} from 'react';
-import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table } from 'antd';
+import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message } from 'antd';
 import { CarOutlined, ToolOutlined, UnorderedListOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import QRCode from 'qrcode';
@@ -322,11 +322,11 @@ const SparePartsRecommendation = () => {
   const [spareParts, setSpareParts] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [vehicleRecommendations, setVehicleRecommendations] = useState([]);
 
   useEffect(() => {
     fetchVehicles();
     fetchSpareParts();
-    fetchRecommendations();
   }, []);
 
   const fetchVehicles = async () => {
@@ -338,50 +338,70 @@ const SparePartsRecommendation = () => {
     }
   };
 
-  console.log("vrrrr",vehicles)
-
   const fetchSpareParts = async () => {
     try {
-      const response = await axios.get(`${apiUrl}spareParts`); // Fetch spare parts from API
+      const response = await axios.get(`${apiUrl}spare-part/getAllSpareParts`); // Fetch spare parts from API
       setSpareParts(response.data);
     } catch (error) {
       console.error('Error fetching spare parts:', error);
     }
   };
 
-  const fetchRecommendations = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}recommendations`); // Fetch recommendations from API
-      setRecommendations(response.data);
-    } catch (error) {
-      console.error('Error fetching recommendations:', error);
-    }
-  };
-
   const fetchVehicleDetails = async (id) => {
     try {
-      console.log("vehicle id",id)
-      const response = await axios.get(`${apiUrl}vehicle/${id}`); // Replace with actual endpoint
+      const response = await axios.get(`${apiUrl}vehicle/${id}`); // Fetch vehicle details from API
       setSelectedVehicle(response.data);
     } catch (error) {
       console.error('Error fetching vehicle details:', error);
     }
   };
 
+  const fetchVehicleRecommendations = async (vehicleId) => {
+    try {
+      const response = await axios.get(`${apiUrl}spare-part-recommondation/getReccomondations/${vehicleId}`); // Fetch recommendations for the selected vehicle
+      console.log("reccomondations",response)
+      setVehicleRecommendations(response.data);
+    } catch (error) {
+      console.error('Error fetching vehicle recommendations:', error);
+    }
+  };
+
   const handleVehicleChange = (value) => {
-    console.log("ccccccc", value)
-    fetchVehicleDetails(value.key);
+    const vehicleId = value.key;
+    fetchVehicleDetails(vehicleId);
+    fetchVehicleRecommendations(vehicleId);
+  };
+
+  const handleEdit = (id) => {
+    console.log('Delete vehicle', id);
+  };
+
+  const handleDelete = (id) => {
+    console.log('Delete vehicle', id);
   };
 
   const onFinish = async (values) => {
+
+    
     try {
-      const response = await axios.post(`${apiUrl}recommendations`, values); // Save recommendation to API
-      console.log('Recommendation saved:', response.data);
-      fetchRecommendations(); // Refresh recommendations list
+
+      const vehicleId = values.vehicleRegNo.value;
+      const partId = values.partId;
+      const payload = {
+        reccomondationMonths: values.reccomondationMonths,
+        recommendationReason: values.recommendationReason,
+      };
+      const response = await axios.post(`${apiUrl}spare-part-recommondation/recommondSparePart/${vehicleId}/${partId}`, payload); // Save recommendation to API
+      message.success("Successfully saved your reccomondation to this vehicle")
+      fetchVehicleRecommendations(values.vehicleRegNo.key);
+      form.resetFields() 
+      setSelectedVehicle(null)// Refresh recommendations list
     } catch (error) {
       console.error('Error saving recommendation:', error);
       alert('Failed to recommend spare part.');
     }
+
+    console.log("rec Ca",values)
   };
 
   const getImageUrlFromBase64 = (base64String) => {
@@ -389,10 +409,30 @@ const SparePartsRecommendation = () => {
   };
 
   const columns = [
-    { title: 'Vehicle Reg No', dataIndex: 'vehicleRegNo', key: 'vehicleRegNo' },
-    { title: 'Spare Part', dataIndex: 'sparePart', key: 'sparePart' },
-    { title: 'Recommendation', dataIndex: 'recommendation', key: 'recommendation' },
+    { title: 'ID', dataIndex: 'id', key: 'id', width: 50 },
+    { title: 'Vehicle Reg No', dataIndex: 'vehicleRegNo', key: 'vehicleRegNo', width: 100, },
+    { title: 'Item Code', dataIndex: 'itemCode', key: 'itemCode' },
+    { title: 'Spare part', dataIndex: 'partName', key: 'partName' },
+    { title: 'Spare Part Price', dataIndex: 'price', key: 'price', width: 80, },
+    { title: 'Reccmonded Months', dataIndex: 'recommondadMonths', key: 'recommondadMonths', width: 70, },
+    { title: 'Reason', dataIndex: 'reason', key: 'reason' },
+    { title: 'Created On', dataIndex: 'createdOn', key: 'createdOn',  render: (createdOn) => dayjs(createdOn).format('YYYY-MM-DD') },
+    { title: 'Created By', dataIndex: 'createdBy', key: 'createdBy' },
+    { title: 'Modified On', dataIndex: 'modifiedOn', key: 'modifiedOn',  render: (createdOn) => dayjs(createdOn).format('YYYY-MM-DD') },
+    { title: 'Modified By', dataIndex: 'modifiedBy', key: 'modifiedBy' },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (text, record) => (
+        <span>
+          <Button icon={<EditOutlined />} onClick={() => handleEdit(record.id)}></Button>
+          <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}></Button>
+        </span>
+      ),
+    },
   ];
+
+  console.log("spare parts ",spareParts)
 
   return (
     <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', marginTop: '24px' }}>
@@ -418,30 +458,51 @@ const SparePartsRecommendation = () => {
                 ))}
               </Select>
             </Form.Item>
+
             <Form.Item
-              name="sparePart"
-              label="Required Spare Part"
+        name="partId"
+        label="Recommend a Spare Part from Stock"
+        rules={[{ required: true, message: 'Please select a spare part' }]}
+      >
+        <Select
+          showSearch
+          placeholder="Select a spare part"
+          optionFilterProp="children"
+          filterOption={(input, option) =>
+            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+            option.itemCode.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {spareParts.map((part) => (
+            <Select.Option key={part.id} value={part.id} itemCode={part.itemCode}>
+              {`${part.itemCode} - ${part.partName} - ${part.vehicleBrand} - ${part.vehicleModel} `} 
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+            <Form.Item
+              name="reccomondationMonths"
+              label="Recommanded Months"
               rules={[{ required: true, message: 'Please enter the required spare part' }]}
             >
               <Input />
             </Form.Item>
+
             <Form.Item
-              name="recommendation"
-              label="Recommend a Spare Part from Stock"
-              rules={[{ required: true, message: 'Please select a spare part' }]}
+              name="recommendationReason"
+              label="Reason for reccomand "
             >
-              <Select placeholder="Select a spare part">
-                {spareParts.map((part) => (
-                  <Select.Option key={part.id} value={part.name}>
-                    {part.name}
-                  </Select.Option>
-                ))}
-              </Select>
+              <Input />
             </Form.Item>
+           
             <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Add Recommendation
+            <Row justify="end">
+            <Col>
+              <Button type="primary" htmlType="submit" >
+                Add Recommondation 
               </Button>
+            </Col>
+          </Row>
             </Form.Item>
           </Form>
         </Col>
@@ -457,7 +518,7 @@ const SparePartsRecommendation = () => {
                       return (
                         <div key={image.id} style={{ marginTop:15 , position: 'relative' }}>
                         <Image
-                          width={300}
+                          width={250}
                           src={imageUrl}
                           alt={selectedVehicle.modelName}
                           style={{ border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
@@ -488,9 +549,12 @@ const SparePartsRecommendation = () => {
         </Col>
     
       </Row>
-      {selectedVehicle && (
-            <Table columns={columns} dataSource={recommendations} pagination={false} style={{ marginTop: '24px' }} />
-          )}
+      {selectedVehicle ? (
+      <Table columns={columns} dataSource={vehicleRecommendations} pagination={false} style={{ marginTop: '24px' }} />
+
+    ) : (
+    ""
+    )}
     </div>
   );
 };
