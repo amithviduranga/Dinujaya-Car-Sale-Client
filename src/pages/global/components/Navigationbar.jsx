@@ -1,8 +1,10 @@
-// NavigationBar.js
 import React, { useState } from 'react';
 import { Menu, Button, Modal, Form, Input, message } from 'antd';
-import { CarOutlined, DollarOutlined, ToolOutlined, PlusOutlined, UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
+import { CarOutlined, DollarOutlined, ToolOutlined, PlusOutlined, UserOutlined, LockOutlined, MailOutlined, HomeOutlined } from '@ant-design/icons';
+import logo from "../../../asserts/logo.png";
 
+const { SubMenu } = Menu;
 
 const NavigationBar = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -38,6 +40,7 @@ const NavigationBar = () => {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#001529', padding: '0 20px' }}>
+      <img src={logo} alt="Logo" style={{ width: '60px' }} />
       <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']} style={{ lineHeight: '64px', flex: 1 }}>
         <Menu.Item
           key="logo"
@@ -48,18 +51,72 @@ const NavigationBar = () => {
             fontSize: 20,
             fontFamily: "'Poppins', sans-serif",
             color: 'white',
-            fontWeight: 600
+            fontWeight: 600,
+          }}
+         
+        >
+          DINUJAYA CAR SALE
+        </Menu.Item>
+        <Menu.Item
+          key="1"
+          icon={<HomeOutlined style={{ fontSize: 20 }} />}
+          style={{
+            fontSize: 15,
+            fontFamily: "'Poppins', sans-serif",
+            color: 'white',
+            fontWeight: 600,
+          }}
+        
+        >
+          <Link to = "/">Home</Link>
+        </Menu.Item>
+        <SubMenu
+          key="vehicleCategories"
+          title={
+            <span style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", color: 'white', fontWeight: 600 }}>
+              <CarOutlined style={{ fontSize: 20,marginRight:8 }} />
+              Vehicle Categories
+            </span>
+          }
+        >
+          <Menu.Item key="van" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+            Cars
+          </Menu.Item>
+          <Menu.Item key="car" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+            Vans
+          </Menu.Item>
+          <Menu.Item key="threeWheel" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+            <Link to = "/vehicleCategories/Bikes">Bikes</Link>
+          </Menu.Item>
+          <Menu.Item key="bike" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+            Three Wheelers
+          </Menu.Item>
+          <Menu.Item key="bike" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+            Lorries
+          </Menu.Item>
+        </SubMenu>
+        <Menu.Item
+          key="3"
+          icon={<DollarOutlined style={{ fontSize: 20 }} />}
+          style={{
+            fontSize: 15,
+            fontFamily: "'Poppins', sans-serif",
+            color: 'white',
+            fontWeight: 600,
           }}
         >
-          DHANUJAYA CAR SALE
-        </Menu.Item>
-        <Menu.Item key="1" icon={<CarOutlined />}>
-          Vehicles
-        </Menu.Item>
-        <Menu.Item key="2" icon={<DollarOutlined />}>
           Advertisements
         </Menu.Item>
-        <Menu.Item key="3" icon={<ToolOutlined />}>
+        <Menu.Item
+          key="4"
+          icon={<ToolOutlined style={{ fontSize: 20 }} />}
+          style={{
+            fontSize: 15,
+            fontFamily: "'Poppins', sans-serif",
+            color: 'white',
+            fontWeight: 600,
+          }}
+        >
           Spare Parts
         </Menu.Item>
       </Menu>
@@ -72,16 +129,15 @@ const NavigationBar = () => {
         Post an Ad
       </Button>
       <Modal
-  
         visible={modalVisible}
         onCancel={handleCancel}
         footer={null}
         centered
       >
-        <div style={{ textAlign: 'center' ,padding:"0px 30px 0px 30px" }}>
+        <div style={{ textAlign: 'center', padding: "0px 30px" }}>
           <h1 style={{ fontSize: '34px', marginBottom: '12px' }}>{isLogin ? 'Login' : 'Register'}</h1>
           <p style={{ fontSize: '16px', color: '#666', marginBottom: '24px' }}>
-            {isLogin ? 'Bfore Post your vehicle advertiesment you have to log in If you have already registered Please enter your login credentials here !! ' : 'Register to post an ad'}
+            {isLogin ? 'Before posting your vehicle advertisement, you have to log in. If you have already registered, please enter your login credentials here!' : 'Register to post an ad'}
           </p>
         </div>
         {isLogin ? (
@@ -105,7 +161,7 @@ const LoginForm = ({ onFinish, onSwitch }) => {
       initialValues={{ remember: true }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
-      style={{padding:40}}
+      style={{ padding: 40 }}
     >
       <Form.Item
         name="username"
@@ -146,7 +202,7 @@ const RegistrationForm = ({ onFinish, onSwitch }) => {
       initialValues={{ remember: true }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
-      style={{padding:30}}
+      style={{ padding: 30 }}
     >
       <Form.Item
         name="username"

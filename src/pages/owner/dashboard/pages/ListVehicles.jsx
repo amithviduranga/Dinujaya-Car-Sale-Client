@@ -116,6 +116,17 @@ const ListNewVehicleForm = () => {
               </Form.Item>
               <Form.Item name="brandName" label="Brand Name" rules={[{ required: true, message: 'Please enter the brand name' }]}>
                 <Input />
+
+              </Form.Item>
+              <Form.Item name="category" label="Vehicle Category" rules={[{ required: true, message: 'PleaseSelect Vehicle Category' }]}>
+              <Select placeholder="Select Province code of vehicle">
+                  <Option value="car">Car</Option>
+                  <Option value="van">Van</Option>
+                  <Option value="bike">Bike</Option>
+                  <Option value="threeWheel">Three Wheel</Option>
+                  <Option value="lorry">Lorry</Option>
+                
+                </Select>
               </Form.Item>
 
               <Form.Item name="provinceCode" label="Province Code" rules={[{ required: true, message: 'Please enter the province code' }]}>
