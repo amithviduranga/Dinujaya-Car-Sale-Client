@@ -8,9 +8,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import OwnerDashboard from './pages/owner/dashboard/OwnerDashboard.jsx';
 import Main from './pages/global/Main.jsx';
-import Bikes from  './pages/global/Bikes.jsx';
+import Bikes from  './pages/global/vehicleCategories/Bikes.jsx';
 import NavigationBar from "./pages/global/components/NavigationBar.jsx";
 import './index.css';
+import Vans from './pages/global/vehicleCategories/Vans.jsx';
+import ThreeWheelers from './pages/global/vehicleCategories/ThreeWheelers.jsx';
+import Lorries from './pages/global/vehicleCategories/Lorries.jsx';
+import Cars from './pages/global/vehicleCategories/Cars.jsx';
+import VehicleDetail from './pages/global/VehicleDetail.jsx'
 
 function App() {
   // Set global configuration for the message component
@@ -42,6 +47,11 @@ return (
       <Route path='/' element={<Main />} />
       {/* Global Routes */}
       <Route path='/vehicleCategories/Bikes' element={<Bikes />} />
+      <Route path='/vehicleCategories/Vans' element={<Vans />} />
+      <Route path='/vehicleCategories/Three-Wheels' element={<ThreeWheelers/>} />
+      <Route path='/vehicleCategories/lorries' element={<Lorries/>} />
+      <Route path='/vehicleCategories/cars' element={<Cars/>} />
+      <Route path="/vehicle/:id" element={<VehicleDetail />} />
 
       {/* Admin Routes */}
       <Route path='/admin/login' element={<Login />} />

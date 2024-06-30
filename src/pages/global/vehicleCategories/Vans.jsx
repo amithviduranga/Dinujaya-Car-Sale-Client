@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Carousel, List, Card, Spin, Layout, Breadcrumb, Input } from 'antd';
 import axios from 'axios';
-import './Carousal.css';
-import banner1 from '../../asserts/web-banner-bike.png';
-import banner2 from '../../asserts/car2.jpg';
-import banner3 from '../../asserts/car4.jpg';
+import '../Carousal.css';
+import banner1 from '../../../asserts/web-banner-bike.png';
+import banner2 from '../../../asserts/car2.jpg';
+import banner3 from '../../../asserts/car4.jpg';
 import { CarOutlined, DashboardOutlined } from '@ant-design/icons';
-import NavigationBar from './components/NavigationBar';
+import NavigationBar from '../components/NavigationBar';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const { Header, Content, Footer, Sider } = Layout;
@@ -33,7 +33,7 @@ const Vans = () => {
 
   const fetchVehicles = async () => {
     try {
-      const response = await axios.get(`${apiUrl}vehicle/category?type=bike`);
+      const response = await axios.get(`${apiUrl}vehicle/category?type=van`);
       setAllVehicles(response.data);
       setFilteredVehicles(response.data);
       setLoading(false); // Update vehicles state with data from API response
@@ -73,7 +73,7 @@ const Vans = () => {
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: "20px" }}>
             <Search
-              placeholder="Search In Bikes...."
+              placeholder="Search In Vans...."
               enterButton="Search"
               size="large"
               style={{

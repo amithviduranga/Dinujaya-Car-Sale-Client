@@ -158,6 +158,10 @@ const ListNewVehicleForm = () => {
               ]}>
                 <InputNumber min={0} style={{ width: '100%' }} />
               </Form.Item>
+              <Form.Item name="modelURL" label="3D Model URL" rules={[{ required: true, message: 'Please enter the brand name' }]}>
+                <Input placeholder='Past your 3D model URL here' />
+
+              </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item name="color" label="Color" rules={[{ required: true, message: 'Please enter the color' }]}>
@@ -167,7 +171,8 @@ const ListNewVehicleForm = () => {
                 <Select placeholder="Select fuel type">
                   <Option value="Petrol">Petrol</Option>
                   <Option value="Diesel">Diesel</Option>
-                  <Option value="Electric">Electric</Option>
+                  <Option value="Electric">Full Electric</Option>
+                  <Option value="Electric">Hybrid</Option>
                 </Select>
               </Form.Item>
               <Form.Item name="registrationNumber" label="Registration Number" rules={[{ required: true, message: 'Please enter the Registration number' }]}>
@@ -179,6 +184,9 @@ const ListNewVehicleForm = () => {
                   <Option value="Old">Old</Option>
                   <Option value="Middle Level">Middle Level</Option>
                 </Select>
+              </Form.Item>
+              <Form.Item name="registeredYear" label="Registration Year" rules={[{ required: true, message: 'Please enter the manufacture year' }]}>
+                <InputNumber min={1886} max={new Date().getFullYear()} style={{ width: '100%' }} />
               </Form.Item>
               <Form.Item name="description" label="Description">
                 <Input.TextArea rows={6} />

@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Carousel, List, Card, Spin, Layout, Breadcrumb, Input } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Carousel, List, Card, Spin, Layout, Input } from 'antd';
 import axios from 'axios';
-import './Carousal.css';
-import banner1 from '../../asserts/web-banner-bike.png';
-import banner2 from '../../asserts/car2.jpg';
-import banner3 from '../../asserts/car4.jpg';
+import '../Carousal.css';
+import banner1 from '../../../asserts/web-banner-bike.png';
 import { CarOutlined, DashboardOutlined } from '@ant-design/icons';
-import NavigationBar from './components/NavigationBar';
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const { Header, Content, Footer, Sider } = Layout;
+const { Content } = Layout;
 const { Search } = Input;
 
-const Bikes = () => {
+const Cars = () => {
   const [allVehicles, setAllVehicles] = useState([]);
   const [filteredVehicles, setFilteredVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchVehicles(); // Fetch vehicles data when component mounts
+    fetchVehicles();
   }, []);
 
   useEffect(() => {
-    // Filter vehicles based on search query
     const filtered = allVehicles.filter(vehicle =>
       vehicle.modelName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       vehicle.brandName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -33,17 +31,19 @@ const Bikes = () => {
 
   const fetchVehicles = async () => {
     try {
-      const response = await axios.get(`${apiUrl}vehicle/category?type=bike`);
+      const response = await axios.get(`${apiUrl}vehicle/category?type=car`);
       setAllVehicles(response.data);
       setFilteredVehicles(response.data);
-      setLoading(false); // Update vehicles state with data from API response
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching vehicles:', error);
       setLoading(false);
     }
   };
 
-  console.log(allVehicles);
+  const handleCardClick = (id) => {
+    navigate(`/vehicle/${id}`);
+  };
 
   const carouselData = [
     { image: banner1, text: 'Welcome to DHINUJAYA CAR SALE', subText: 'Explore our wide range of vehicles' },
@@ -73,7 +73,7 @@ const Bikes = () => {
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: "20px" }}>
             <Search
-              placeholder="Search In Bikes...."
+              placeholder="Search In Vans...."
               enterButton="Search"
               size="large"
               style={{
@@ -81,9 +81,9 @@ const Bikes = () => {
                 borderWidth: '12px',
                 borderColor: '#1890ff',
                 marginTop: 40,
-                border: '1px solid #1890ff', // Adding border with primary color
-                borderRadius: '10px', // Adding border radius for smoother edges
-                boxShadow: '0 3px 8px rgba(0, 0, 0, 0.5)', // Adding shadow for better highlight
+                border: '1px solid #1890ff',
+                borderRadius: '10px',
+                boxShadow: '0 3px 8px rgba(0, 0, 0, 0.5)',
                 overflow: 'hidden'
               }}
               onSearch={value => setSearchQuery(value)}
@@ -103,14 +103,15 @@ const Bikes = () => {
                   return (
                     <List.Item>
                       <Card
+                        onClick={() => handleCardClick(item.id)}
                         style={{
-                          height: '400px', // Fixed height for the card
-                          border: '1px solid #1890ff', // Adding border with primary color
-                          borderRadius: '10px', // Adding border radius for smoother edges
-                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.6)', // Adding shadow for better highlight
+                          height: '400px',
+                          border: '1px solid #1890ff',
+                          borderRadius: '10px',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.6)',
                           overflow: 'hidden',
-                          marginBottom: '80px'  // Ensuring content does not overflow
-                        }}// Fixed height for the card
+                          marginBottom: '80px'
+                        }}
                         cover={
                           <div style={{ height: '180px', overflow: 'hidden' }}>
                             <img
@@ -140,4 +141,4 @@ const Bikes = () => {
   );
 };
 
-export default Bikes;
+export default Cars;

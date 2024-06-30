@@ -1,0 +1,22 @@
+/* VehicleDetails.css */
+
+.ant-image {
+    border-radius: 10px;
+  }
+  
+  .ant-card {
+    border-radius: 10px;
+  }
+  
+  .ant-card-body {
+    padding: 24px;
+  }
+  
+  .ant-row {
+    margin-top: 16px;
+  }
+  
+  img {
+    display: block;
+  }
+  

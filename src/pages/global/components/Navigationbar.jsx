@@ -80,19 +80,19 @@ const NavigationBar = () => {
           }
         >
           <Menu.Item key="van" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
-            Cars
+          <Link to = "/vehicleCategories/Cars">Cars</Link>
           </Menu.Item>
           <Menu.Item key="car" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
-            Vans
+          <Link to = "/vehicleCategories/Vans">Vans</Link>
           </Menu.Item>
-          <Menu.Item key="threeWheel" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+          <Menu.Item key="bike" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
             <Link to = "/vehicleCategories/Bikes">Bikes</Link>
           </Menu.Item>
-          <Menu.Item key="bike" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
-            Three Wheelers
+          <Menu.Item key="threeWheel" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+          <Link to = "/vehicleCategories/Three-wheels">Three Wheels</Link>
           </Menu.Item>
-          <Menu.Item key="bike" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
-            Lorries
+          <Menu.Item key="lorry" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
+          <Link to = "/vehicleCategories/lorries">Lorries</Link>
           </Menu.Item>
         </SubMenu>
         <Menu.Item
