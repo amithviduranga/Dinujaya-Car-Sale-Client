@@ -21,7 +21,7 @@ export default function Registration() {
 
   const onFinish = async (values) => {
     try {
-      const response = await axios.post(`${apiUrl}/auth/register`, values); 
+      const response = await axios.post(`${apiUrl}auth/register/1`, values); 
       if (response.status === 200) {
         message.success("Registration successful. Please login.");
        navigate("/login")

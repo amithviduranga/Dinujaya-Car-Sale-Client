@@ -16,6 +16,8 @@ import ThreeWheelers from './pages/global/vehicleCategories/ThreeWheelers.jsx';
 import Lorries from './pages/global/vehicleCategories/Lorries.jsx';
 import Cars from './pages/global/vehicleCategories/Cars.jsx';
 import VehicleDetail from './pages/global/VehicleDetail.jsx'
+import PostAnAdd from './pages/global/PostAnAdd.jsx'
+import PayForAdvertiesment from './pages/global/PayForAdvertiesment.jsx';
 
 function App() {
   // Set global configuration for the message component
@@ -52,6 +54,10 @@ return (
       <Route path='/vehicleCategories/lorries' element={<Lorries/>} />
       <Route path='/vehicleCategories/cars' element={<Cars/>} />
       <Route path="/vehicle/:id" element={<VehicleDetail />} />
+      <Route path="/post-ad/" element={<PostAnAdd />} />
+      <Route path="/post-add/payments" element={<PayForAdvertiesment />} />
+
+      
 
       {/* Admin Routes */}
       <Route path='/admin/login' element={<Login />} />

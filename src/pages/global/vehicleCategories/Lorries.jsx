@@ -3,6 +3,7 @@ import { Carousel, List, Card, Spin, Layout, Breadcrumb, Input } from 'antd';
 import axios from 'axios';
 import '../Carousal.css';
 import banner1 from '../../../asserts/web-banner-bike.png';
+import { useNavigate } from 'react-router-dom';
 import banner2 from '../../../asserts/car2.jpg';
 import banner3 from '../../../asserts/car4.jpg';
 import { CarOutlined, DashboardOutlined } from '@ant-design/icons';
@@ -17,6 +18,7 @@ const Lorries = () => {
   const [filteredVehicles, setFilteredVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchVehicles(); // Fetch vehicles data when component mounts
@@ -48,6 +50,11 @@ const Lorries = () => {
   const carouselData = [
     { image: banner1, text: 'Welcome to DHINUJAYA CAR SALE', subText: 'Explore our wide range of vehicles' },
   ];
+
+  const handleCardClick = (id) => {
+    navigate(`/vehicle/${id}`);
+  };
+
 
   return (
     <div>
@@ -103,6 +110,7 @@ const Lorries = () => {
                   return (
                     <List.Item>
                       <Card
+                       onClick={() => handleCardClick(item.id)}
                         style={{
                           height: '400px', // Fixed height for the card
                           border: '1px solid #1890ff', // Adding border with primary color

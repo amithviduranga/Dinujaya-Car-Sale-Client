@@ -168,7 +168,7 @@ export default function App() {
             </Button>
             <div style={styles.footer}>
               <Text style={styles.text}>Don't have an account?</Text>{" "}
-              <Link href="/register">Sign up now</Link>
+              <Link href="/admin/register">Sign up now</Link>
             </div>
           </Form.Item>
         </Form>

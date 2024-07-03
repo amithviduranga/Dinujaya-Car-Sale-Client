@@ -1,42 +1,73 @@
-import React, { useState } from 'react';
-import { Menu, Button, Modal, Form, Input, message } from 'antd';
-import { Link } from 'react-router-dom';
-import { CarOutlined, DollarOutlined, ToolOutlined, PlusOutlined, UserOutlined, LockOutlined, MailOutlined, HomeOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Menu, Button, Avatar, Dropdown, message } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import { CarOutlined, DollarOutlined, ToolOutlined, PlusOutlined, HomeOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import logo from "../../../asserts/logo.png";
+import AuthModal from './UserAuthModel';
+import axios from 'axios';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const { SubMenu } = Menu;
 
 const NavigationBar = () => {
+  const navigate = useNavigate();
   const [modalVisible, setModalVisible] = useState(false);
-  const [isLogin, setIsLogin] = useState(true); // State to manage login/registration view
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
+  const [requestedPath, setRequestedPath] = useState("");
 
-  const showModal = () => {
-    setModalVisible(true);
+  useEffect(() => {
+    const token = localStorage.getItem('userToken');
+    if (token) {
+      setIsLoggedIn(true);
+      // Replace with actual logic to decode username from token or fetch user details
+      setUsername("User");
+    }
+  }, []);
+
+  const showModal = (path) => {
+    setRequestedPath(path); // Store the requested path
+    setModalVisible(true); // Show the modal
   };
 
   const handleCancel = () => {
+    
     setModalVisible(false);
   };
 
-  const handleSwitch = () => {
-    setIsLogin(!isLogin);
+
+  const handleLogout = () => {
+    localStorage.removeItem('userToken');
+    setIsLoggedIn(false);
+    setUsername("");
+    message.success('Logout successful!');
   };
 
-  const handleLogin = (values) => {
-    // Simulate login logic here
-    console.log('Login values:', values);
-    // Close the modal after successful login
-    setModalVisible(false);
-    message.success('Login successful!');
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    // Navigate to the requested path after login success
+    navigate(requestedPath || '/'); // Navigate to requested path or home if not specified
+    setRequestedPath(""); // Clear the requested path
+    setModalVisible(false); // Close the modal
   };
 
-  const handleRegistration = (values) => {
-    // Simulate registration logic here
-    console.log('Registration values:', values);
-    // Close the modal after successful registration
-    setModalVisible(false);
-    message.success('Registration successful! You can now login.');
+  const checkUserToken = (path) => {
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+      showModal(path); // Show the modal with the requested path
+    } else {
+      navigate('/post-ad/'); // Navigate to post-ad page if already logged in
+    }
   };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+        Logout
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#001529', padding: '0 20px' }}>
@@ -53,7 +84,6 @@ const NavigationBar = () => {
             color: 'white',
             fontWeight: 600,
           }}
-         
         >
           DINUJAYA CAR SALE
         </Menu.Item>
@@ -66,33 +96,32 @@ const NavigationBar = () => {
             color: 'white',
             fontWeight: 600,
           }}
-        
         >
-          <Link to = "/">Home</Link>
+          <Link to="/">Home</Link>
         </Menu.Item>
         <SubMenu
           key="vehicleCategories"
           title={
             <span style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", color: 'white', fontWeight: 600 }}>
-              <CarOutlined style={{ fontSize: 20,marginRight:8 }} />
+              <CarOutlined style={{ fontSize: 20, marginRight: 8 }} />
               Vehicle Categories
             </span>
           }
         >
           <Menu.Item key="van" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
-          <Link to = "/vehicleCategories/Cars">Cars</Link>
+            <Link to="/vehicleCategories/Cars">Cars</Link>
           </Menu.Item>
           <Menu.Item key="car" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
-          <Link to = "/vehicleCategories/Vans">Vans</Link>
+            <Link to="/vehicleCategories/Vans">Vans</Link>
           </Menu.Item>
           <Menu.Item key="bike" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
-            <Link to = "/vehicleCategories/Bikes">Bikes</Link>
+            <Link to="/vehicleCategories/Bikes">Bikes</Link>
           </Menu.Item>
           <Menu.Item key="threeWheel" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
-          <Link to = "/vehicleCategories/Three-wheels">Three Wheels</Link>
+            <Link to="/vehicleCategories/Three-wheels">Three Wheels</Link>
           </Menu.Item>
           <Menu.Item key="lorry" style={{ fontSize: 15, fontFamily: "'Poppins', sans-serif", fontWeight: 600 }}>
-          <Link to = "/vehicleCategories/lorries">Lorries</Link>
+            <Link to="/vehicleCategories/lorries">Lorries</Link>
           </Menu.Item>
         </SubMenu>
         <Menu.Item
@@ -123,122 +152,32 @@ const NavigationBar = () => {
       <Button
         type="primary"
         icon={<PlusOutlined />}
-        style={{ backgroundColor: 'yellow', borderColor: 'yellow', color: 'black' }}
-        onClick={showModal}
+        style={{ backgroundColor: 'yellow', borderColor: 'yellow', color: 'black', marginRight: 50 }}
+        onClick={() => checkUserToken('/post-ad')} // Pass '/post-ad' as the requested path
       >
         Post an Ad
       </Button>
-      <Modal
-        visible={modalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        centered
-      >
-        <div style={{ textAlign: 'center', padding: "0px 30px" }}>
-          <h1 style={{ fontSize: '34px', marginBottom: '12px' }}>{isLogin ? 'Login' : 'Register'}</h1>
-          <p style={{ fontSize: '16px', color: '#666', marginBottom: '24px' }}>
-            {isLogin ? 'Before posting your vehicle advertisement, you have to log in. If you have already registered, please enter your login credentials here!' : 'Register to post an ad'}
-          </p>
-        </div>
-        {isLogin ? (
-          <LoginForm onFinish={handleLogin} onSwitch={handleSwitch} />
-        ) : (
-          <RegistrationForm onFinish={handleRegistration} onSwitch={handleSwitch} />
-        )}
-      </Modal>
+      {isLoggedIn ? (
+        <Dropdown overlay={menu} trigger={['click']}>
+          <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', color: 'white' }}>
+            <Avatar size={64} icon={<UserOutlined />} />
+            <span style={{ marginLeft: 10 ,fontSize:16 }}>Hi {username}</span>
+          </div>
+        </Dropdown>
+      ) : (
+        <>
+          <Button
+            type="primary"
+            icon={<UserOutlined />}
+            style={{ marginRight: 10 }}
+            onClick={() => showModal('')} // Pass empty string as requested path for login/register
+          >
+            Login/Register
+          </Button>
+        </>
+      )}
+      <AuthModal visible={modalVisible} onCancel={handleCancel} onLoginSuccess={handleLoginSuccess} requestedPath={requestedPath} />
     </div>
-  );
-};
-
-const LoginForm = ({ onFinish, onSwitch }) => {
-  const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-  };
-
-  return (
-    <Form
-      name="login-form"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      style={{ padding: 40 }}
-    >
-      <Form.Item
-        name="username"
-        rules={[{ required: true, message: 'Please input your username!' }]}
-      >
-        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
-      </Form.Item>
-
-      <Form.Item
-        name="password"
-        rules={[{ required: true, message: 'Please input your password!' }]}
-      >
-        <Input
-          prefix={<LockOutlined className="site-form-item-icon" />}
-          type="password"
-          placeholder="Password"
-        />
-      </Form.Item>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-          Log in
-        </Button>
-        Or <a onClick={onSwitch}>register now!</a>
-      </Form.Item>
-    </Form>
-  );
-};
-
-const RegistrationForm = ({ onFinish, onSwitch }) => {
-  const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-  };
-
-  return (
-    <Form
-      name="registration-form"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      style={{ padding: 30 }}
-    >
-      <Form.Item
-        name="username"
-        rules={[{ required: true, message: 'Please input your username!' }]}
-      >
-        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
-      </Form.Item>
-
-      <Form.Item
-        name="email"
-        rules={[
-          { required: true, message: 'Please input your email!' },
-          { type: 'email', message: 'The input is not valid E-mail!' },
-        ]}
-      >
-        <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" />
-      </Form.Item>
-
-      <Form.Item
-        name="password"
-        rules={[{ required: true, message: 'Please input your password!' }]}
-      >
-        <Input
-          prefix={<LockOutlined className="site-form-item-icon" />}
-          type="password"
-          placeholder="Password"
-        />
-      </Form.Item>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-          Register
-        </Button>
-        Or <a onClick={onSwitch}>login now!</a>
-      </Form.Item>
-    </Form>
   );
 };
 

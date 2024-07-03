@@ -5,8 +5,8 @@ import axios from 'axios';
 import QRCode from 'qrcode';
 import dayjs from 'dayjs';
 
-const { Header, Content, Footer } = Layout;
 const { Option } = Select;
+const { Dragger } = Upload;
 const apiUrl = process.env.REACT_APP_API_URL;
 
 
@@ -27,11 +27,10 @@ const NavigationBar = ({ onMenuClick }) => (
 const ListNewVehicleForm = () => {
   const [form] = Form.useForm();
   const [mainImage, setMainImage] = useState(null);
-  const [additionalImages, setAdditionalImages] = useState([]);
+  const [additionalImages, setAdditionalImages] = useState(Array(6).fill(null));
   const [qrCodeData, setQrCodeData] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [mainImagePreview, setMainImagePreview] = useState(null);
-  const [additionalImagesPreview, setAdditionalImagesPreview] = useState([]);
+
 
   const onFinish = async (values) => {
     console.log('Form values:', values);
@@ -39,10 +38,12 @@ const ListNewVehicleForm = () => {
     const formData = new FormData();
     formData.append('vehicle', new Blob([JSON.stringify(values)], { type: 'application/json' }));
     if (mainImage) {
-      formData.append('mainImage', mainImage);
+      formData.append('mainImage', mainImage.originFileObj);
     }
     additionalImages.forEach((image, index) => {
-      formData.append('images', image);
+      if (image) {
+        formData.append('images', image.originFileObj);
+      }
     });
 
     try {
@@ -54,12 +55,15 @@ const ListNewVehicleForm = () => {
       });
       console.log('Response:', response.data);
       const vehicleId = response.data.id;  // Assuming the response contains the vehicle ID
-
+      
       // Generate QR code
       const qrCodeUrl = `${apiUrl}vehicle/details/${vehicleId}`;
       const qrCode = await QRCode.toDataURL(qrCodeUrl);
 
       setQrCodeData(qrCode);
+      form.resetFields();
+      setMainImage(null);
+      setAdditionalImages(Array(6).fill(null));
       setIsModalVisible(true);
 
     } catch (error) {
@@ -68,19 +72,22 @@ const ListNewVehicleForm = () => {
     }
   };
 
-  const handleMainImageUpload = ({ file }) => {
-    setMainImage(file);
-    setMainImagePreview(URL.createObjectURL(file));
+  const handleMainImageChange = (info) => {
+    if (info.file.status === 'done') {
+      // Get this URL from response in real world scenario
+      setMainImage(info.file);
+    }
   };
 
-  const handleAdditionalImagesUpload = ({ fileList }) => {
-    setAdditionalImages(fileList.map(file => file.originFileObj));
-  
-    // Update previews based on fileList
-    const previews = fileList.map(file => URL.createObjectURL(file.originFileObj));
-  
-    setAdditionalImagesPreview(previews);
+  const handleAdditionalImageChange = (index) => (info) => {
+    if (info.file.status === 'done') {
+      // Get this URL from response in real world scenario
+      const newImages = [...additionalImages];
+      newImages[index] = info.file;
+      setAdditionalImages(newImages);
+    }
   };
+
   const handleModalClose = () => {
     setIsModalVisible(false);
   };
@@ -191,57 +198,69 @@ const ListNewVehicleForm = () => {
               <Form.Item name="description" label="Description">
                 <Input.TextArea rows={6} />
               </Form.Item>
+              <Form.Item name="listingType" label="Listing Type" style={{ display: 'none' }} initialValue={1}>
+  <Input type="hidden" />
+</Form.Item>
             </Col>
           </Row>
         </Card>
 
-        <Card type="inner" title="Upload Photos" style={{ borderRadius: '8px', marginTop: '24px' }}>
-         
-        <div style={{ marginBottom: '24px' }}>
-            <h4>Main Image</h4>
-            <Upload
-              name="mainImage"
-              listType="picture-card"
-              className="avatar-uploader"
-              fileList={mainImage ? [{ uid: '-1', name: 'image.png', status: 'done', url: mainImagePreview }] : []}
-              showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
-              beforeUpload={() => false}
-              onChange={handleMainImageUpload}
-              style={{ width: '100%', height: '100%' }}
-            >
-              {mainImagePreview ? null : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <Button icon={<UploadOutlined />} style={{ background: '#f0f2f5', width: '100%', height: '100%' }} />
-                </div>
-              )}
-            </Upload>
-          </div>
-          <Row gutter={12} style={{ marginTop: '24px' }}>
-            {[1, 2, 3, 4, 5].map(index => (
-              <Col key={index} span={4}>
-                <h4>Additional Image {index}</h4>
-                <Upload
-  name={`additionalImage${index}`}
-  listType="picture-card"
-  className="avatar-uploader"
-  fileList={additionalImagesPreview[index] ? [{ uid: `-${index}`, name: 'image.png', status: 'done', url: additionalImagesPreview[index] }] : []}
-  showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
-  beforeUpload={() => false} // Prevent actual upload for demonstration
-  onChange={handleAdditionalImagesUpload}
-  style={{ width: '100%', height: '100%' }}
->
-  {additionalImagesPreview[index] ? null : (
-    <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Button icon={<UploadOutlined />} style={{ background: '#f0f2f5', width: '100%', height: '100%' }} />
-    </div>
-  )}
-</Upload>
-              </Col>
-            ))}
-          </Row>
-      
-        </Card>
+        <Card type="inner" title="Upload Vehicle Images" style={{ border: '0px solid ', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0.1, 0.1)', fontSize: 20, marginTop: 24 }}>
+            <div style={{ marginBottom: 24 }}>
+              <Dragger
+                name="mainImage"
+                showUploadList={false}
+                customRequest={({ file, onSuccess }) => {
+                  setTimeout(() => {
+                    onSuccess("ok");
+                  }, 0);
+                }}
+                onChange={handleMainImageChange}
+                style={{ width: 400, height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              >
+                {mainImage ? (
+                  <img src={URL.createObjectURL(mainImage.originFileObj)} alt="Main" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+                ) : (
+                  <div style={{ textAlign: 'center' }}>
+                    <p className="ant-upload-drag-icon" style={{ fontSize: 24 }}>
+                      <UploadOutlined />
+                    </p>
+                    <p className="ant-upload-text">Click or drag main image to this area</p>
+                  </div>
+                )}
+              </Dragger>
+            </div>
 
+            <Row gutter={12} style={{ marginTop: '34px', marginRight: 10 }}>
+              {additionalImages.map((image, index) => (
+                <Col span={4} key={index}>
+                  <Dragger
+                    name={`additionalImage-${index}`}
+                    showUploadList={false}
+                    customRequest={({ file, onSuccess }) => {
+                      setTimeout(() => {
+                        onSuccess("ok");
+                      }, 0);
+                    }}
+                    onChange={handleAdditionalImageChange(index)}
+                    style={{ padding: 0 }}
+                  >
+                    {image ? (
+                      <img src={URL.createObjectURL(image.originFileObj)} alt={`Additional ${index + 1}`} style={{ width: '100%' }} />
+                    ) : (
+                      <div>
+                        <p className="ant-upload-drag-icon">
+                          <UploadOutlined />
+                        </p>
+                        <p className="ant-upload-text">Click or drag additional image {index + 1} to this area</p>
+                      </div>
+                    )}
+                  </Dragger>
+                </Col>
+              ))}
+            </Row>
+
+          </Card>
         <Form.Item>
           <Row justify="end">
             <Col>

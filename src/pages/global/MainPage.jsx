@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Carousel, List, Card, Spin,Layout,Breadcrumb ,Input} from 'antd';
 import axios from 'axios';
 import './Carousal.css'
+import { useNavigate } from 'react-router-dom';
 import banner1 from '../../asserts/car1.jpg';
 import banner2 from '../../asserts/car2.jpg';
 import banner3 from '../../asserts/car4.jpg';
@@ -15,6 +16,7 @@ const MainPage = () => {
   const [allVehicles, setAllVehicles] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchVehicles(); // Fetch vehicles data when component mounts
@@ -46,6 +48,10 @@ const MainPage = () => {
     { image: banner2, text: 'Best Deals on Used Cars', subText: 'Find great prices on reliable used cars' },
     { image: banner3, text: 'Find Your Perfect Vehicle', subText: 'Discover the car that fits your needs' },
   ];
+
+  const handleCardClick = (id) => {
+    navigate(`/vehicle/${id}`);
+  };
 
   return (
     <div>
@@ -99,7 +105,7 @@ const MainPage = () => {
                   return (
                     <List.Item>
                       <Card
-                  
+                  onClick={() => handleCardClick(item.id)}
                   style={{ 
                     height: '400px',
                     border: '1px solid #1890ff', 
