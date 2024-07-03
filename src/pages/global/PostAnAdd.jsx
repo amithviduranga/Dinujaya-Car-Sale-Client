@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import QRCode from 'qrcode';
 import dayjs from 'dayjs';
+import PaymentSuccess from './PayForAdvertiesment';
 
 const {  Content } = Layout;
 const { Option } = Select;
@@ -36,39 +37,37 @@ const navigate = useNavigate();
   const [form] = Form.useForm();
   const [mainImage, setMainImage] = useState(null);
   const [additionalImages, setAdditionalImages] = useState(Array(6).fill(null));
-
+  const [formDataa, setFormData] = useState(null); 
  
   const onFinish = async (values) => {
     console.log('Form values:', values);
 
-    const formData = new FormData();
-    formData.append('vehicle', new Blob([JSON.stringify(values)], { type: 'application/json' }));
-    if (mainImage) {
-      formData.append('mainImage', mainImage.originFileObj);
+  const formData = new FormData();
+  formData.append('vehicle', new Blob([JSON.stringify(values)], { type: 'application/json' }));
+  if (mainImage) {
+    formData.append('mainImage', mainImage.originFileObj);
+  }
+  additionalImages.forEach((image, index) => {
+    if (image) {
+      formData.append('images', image.originFileObj);
     }
-    additionalImages.forEach((image, index) => {
-      if (image) {
-        formData.append('images', image.originFileObj);
-      }
+  });
+   
+  try {
+    console.log(formData);
+    const response = await axios.post(`${apiUrl}vehicle/saveVehicleDetails`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
 
-    try {
-      console.log(formData);
-      const response = await axios.post(`${apiUrl}vehicle/saveVehicleDetails`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      
-      const paymentResponse = await axios.post(`${apiUrl}payment/create-checkout-session`)
-      const checkoutUrl = paymentResponse.data; // Assuming your backend returns the URL as `url`
-    
-      // Redirect to Stripe Checkout session
-      window.location.href = checkoutUrl;
-      
+    const paymentResponse = await axios.post(`${apiUrl}payment/create-checkout-session`);
+    const checkoutUrl = paymentResponse.data; // Assuming your backend returns the URL as `url`
 
+    // Redirect to Stripe Checkout session
+    window.location.href = checkoutUrl;
 
-    } catch (error) {
+  } catch (error) {
       console.error('Error uploading vehicle details:', error);
       alert('Failed to list vehicle.');
     }
@@ -259,7 +258,7 @@ const navigate = useNavigate();
           </Row>
         </Form.Item>
       </Form>
-      
+      {formDataa && <PaymentSuccess formData={formDataa} />}
     </div>
     </Layout>
   );

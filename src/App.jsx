@@ -55,7 +55,7 @@ return (
       <Route path='/vehicleCategories/cars' element={<Cars/>} />
       <Route path="/vehicle/:id" element={<VehicleDetail />} />
       <Route path="/post-ad/" element={<PostAnAdd />} />
-      <Route path="/post-add/payments" element={<PayForAdvertiesment />} />
+      <Route path="//payment-success" element={<PayForAdvertiesment />} />
 
       
 
