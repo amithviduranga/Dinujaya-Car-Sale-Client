@@ -1,5 +1,5 @@
 import React, { useState ,useEffect} from 'react';
-import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message } from 'antd';
+import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message,Spin } from 'antd';
 import { CarOutlined, ToolOutlined, UnorderedListOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
@@ -38,12 +38,13 @@ const navigate = useNavigate();
   const [mainImage, setMainImage] = useState(null);
   const [additionalImages, setAdditionalImages] = useState(Array(6).fill(null));
   const [formDataa, setFormData] = useState(null); 
+  const [loading, setLoading] = useState(false);
  
   const onFinish = async (values) => {
     console.log('Form values:', values);
-
+  setLoading(true)
   const formData = new FormData();
-  formData.append('vehicle', new Blob([JSON.stringify(values)], { type: 'application/json' }));
+  formData.append('advertiesment', new Blob([JSON.stringify(values)], { type: 'application/json' }));
   if (mainImage) {
     formData.append('mainImage', mainImage.originFileObj);
   }
@@ -55,12 +56,13 @@ const navigate = useNavigate();
    
   try {
     console.log(formData);
-    const response = await axios.post(`${apiUrl}vehicle/saveVehicleDetails`, formData, {
+    const response = await axios.post(`${apiUrl}advertiesments/createAdvertiesment`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
 
+    console.log("response",response)
     const paymentResponse = await axios.post(`${apiUrl}payment/create-checkout-session`);
     const checkoutUrl = paymentResponse.data; // Assuming your backend returns the URL as `url`
 
@@ -70,6 +72,7 @@ const navigate = useNavigate();
   } catch (error) {
       console.error('Error uploading vehicle details:', error);
       alert('Failed to list vehicle.');
+      setLoading(false);
     }
   };
 
@@ -90,6 +93,7 @@ const navigate = useNavigate();
   };
 
   return (
+    <Spin spinning={loading} tip="Redirecting to payment gateway...">
     <Layout>
     <div style={{border: '0px solid ',
               borderRadius: '10px',
@@ -261,6 +265,8 @@ const navigate = useNavigate();
       {formDataa && <PaymentSuccess formData={formDataa} />}
     </div>
     </Layout>
+    </Spin>
+
   );
 };
 
