@@ -33,13 +33,19 @@ const OwnerDashboard = () =>{
     };
   return (
    <Layout>
-     <Sider theme='light' triger="null" collapsible = {collapsed} className='sider'>
-     <Sidebar onMenuClick={setSelectedKey} />
+     <Sider style={{border: '0px solid ',
+             
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+              overflow: 'hidden'}} theme='light' triger="null" collapsible = {collapsed} className='sider'>
+     <Sidebar  onMenuClick={setSelectedKey} />
      <Button type='text' icon={collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>} onClick={()=>setCollapsed(!collapsed)}
        className='triger-btn' />
      </Sider>
      <Layout>
-         <Header className='header'>
+         <Header style={{border: '0px solid ',
+              
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+              overflow: 'hidden'}}className='header'>
           <CustomHeader/>
          </Header>
          <Content className='content'>

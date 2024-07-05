@@ -9,13 +9,13 @@ const Sidebar= ({ onMenuClick })=>{
   
     return(
      <>
-       <Flex align="center" justify="center">
+       <Flex  align="center" justify="center">
          <div className="logo">
          <img src={Logoimage} alt="Logo" style={{ width: '100px', height: '70px' }} />
          </div>
        </Flex>
 
-       <Menu mode="inline" defaultSelectedKeys={['1']} className="menu-bar" onClick={({key}) => onMenuClick(key)}
+       <Menu  mode="inline" defaultSelectedKeys={['1']} className="menu-bar" onClick={({key}) => onMenuClick(key)}
        items={[
         {
           key:'1',

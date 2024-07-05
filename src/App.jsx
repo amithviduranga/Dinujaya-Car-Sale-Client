@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import { BrowserRouter, Routes, Route,useLocation  } from 'react-router-dom';
 import Login from './pages/Login.jsx';
+import { useContext,useEffect } from 'react';
 import { message } from "antd";
 import Register from './pages/Register.jsx';
 import { ToastContainer } from 'react-toastify';
@@ -18,7 +19,8 @@ import Cars from './pages/global/vehicleCategories/Cars.jsx';
 import VehicleDetail from './pages/global/VehicleDetail.jsx'
 import PostAnAdd from './pages/global/PostAnAdd.jsx'
 import PayForAdvertiesment from './pages/global/PayForAdvertiesment.jsx';
-
+import {GlobalProvider} from './GlobalContext.js'
+import { GlobalContext } from './GlobalContext';
 function App() {
   // Set global configuration for the message component
 message.config({
@@ -28,16 +30,27 @@ message.config({
 
 
  return (
+  <GlobalProvider>
   <BrowserRouter>
+ 
     <AppContent />
+   
   </BrowserRouter>
+  </GlobalProvider>
 );
 }
 
 function AppContent() {
 // Use the useLocation hook to get the current location
 const location = useLocation();
-
+ 
+const { response } = useContext(GlobalContext);
+useEffect(() => {
+  if (response) {
+    const addId = response.id
+    localStorage.setItem('add-id',addId)
+  }
+}, [response]);
 // Function to check if the current path contains 'admin'
 const isAdminPath = location.pathname.startsWith('/admin');
 
@@ -55,7 +68,7 @@ return (
       <Route path='/vehicleCategories/cars' element={<Cars/>} />
       <Route path="/vehicle/:id" element={<VehicleDetail />} />
       <Route path="/post-ad/" element={<PostAnAdd />} />
-      <Route path="//payment-success" element={<PayForAdvertiesment />} />
+      <Route path="/payment-success" element={<PayForAdvertiesment />} />
 
       
 

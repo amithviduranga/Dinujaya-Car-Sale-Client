@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from 'react';
+import React, { useState ,useEffect,useContext } from 'react';
 import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message,Spin } from 'antd';
 import { CarOutlined, ToolOutlined, UnorderedListOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { loadStripe } from '@stripe/stripe-js';
@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import QRCode from 'qrcode';
 import dayjs from 'dayjs';
 import PaymentSuccess from './PayForAdvertiesment';
+import { GlobalContext } from '../../GlobalContext';
 
 const {  Content } = Layout;
 const { Option } = Select;
@@ -33,12 +34,13 @@ const NavigationBar = ({ onMenuClick }) => (
 
 const ListNewVehicleForm = () => {
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [mainImage, setMainImage] = useState(null);
   const [additionalImages, setAdditionalImages] = useState(Array(6).fill(null));
   const [formDataa, setFormData] = useState(null); 
   const [loading, setLoading] = useState(false);
+  const { setResponse } = useContext(GlobalContext);
  
   const onFinish = async (values) => {
     console.log('Form values:', values);
@@ -61,11 +63,12 @@ const navigate = useNavigate();
         'Content-Type': 'multipart/form-data',
       },
     });
-
+    setResponse(response.data);
+  
     console.log("response",response)
     const paymentResponse = await axios.post(`${apiUrl}payment/create-checkout-session`);
     const checkoutUrl = paymentResponse.data; // Assuming your backend returns the URL as `url`
-
+    
     // Redirect to Stripe Checkout session
     window.location.href = checkoutUrl;
 
@@ -112,6 +115,10 @@ const navigate = useNavigate();
                 <Input />
               </Form.Item>
               <Form.Item name="brandName" label="Brand Name" rules={[{ required: true, message: 'Please enter the brand name' }]}>
+                <Input />
+
+              </Form.Item>
+              <Form.Item name="contactNo" label="Contact No" rules={[{ required: true, message: 'Please enter valied Contact Number' }]}>
                 <Input />
 
               </Form.Item>
@@ -182,11 +189,14 @@ const navigate = useNavigate();
               <Form.Item name="registeredYear" label="Registration Year" rules={[{ required: true, message: 'Please enter the manufacture year' }]}>
                 <InputNumber min={1886} max={new Date().getFullYear()} style={{ width: '100%' }} />
               </Form.Item>
+              <Form.Item name="location" label="Vehicle Location" rules={[{ required: true, message: 'Please vehicle Current Location' }]}>
+                <Input style={{ width: '100%' }} />
+              </Form.Item>
               <Form.Item name="description" label="Description">
                 <Input.TextArea rows={6} />
               </Form.Item>
-              <Form.Item name="listingType" label="Listing Type" style={{ display: 'none' }} initialValue={0}>
-  <Input type="hidden" />
+              <Form.Item name="status" label="Listing Type" style={{ display: 'none' }} initialValue={0}>
+  <InputNumber type="hidden" />
 </Form.Item>
             </Col>
           </Row>
