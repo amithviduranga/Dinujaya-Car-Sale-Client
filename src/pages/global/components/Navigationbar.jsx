@@ -21,8 +21,8 @@ const NavigationBar = () => {
     const token = localStorage.getItem('userToken');
     if (token) {
       setIsLoggedIn(true);
-      // Replace with actual logic to decode username from token or fetch user details
-      setUsername("User");
+      const userName = localStorage.getItem('userName')
+      setUsername(userName);
     }
   }, []);
 
@@ -39,6 +39,7 @@ const NavigationBar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('userToken');
+    localStorage.removeItem('userId')
     setIsLoggedIn(false);
     setUsername("");
     message.success('Logout successful!');

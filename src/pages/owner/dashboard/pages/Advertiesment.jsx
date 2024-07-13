@@ -1,6 +1,6 @@
 import React, { useState ,useEffect,useContext} from 'react';
-import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message,Spin } from 'antd';
-import { CloseOutlined, EyeOutlined, CheckOutlined, CheckCircleOutlined, CloseCircleOutlined ,CarOutlined,UnorderedListOutlined} from '@ant-design/icons';
+import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message,Spin,Space } from 'antd';
+import { CloseOutlined, EyeOutlined, CheckOutlined, CheckCircleOutlined, CloseCircleOutlined ,CarOutlined,UnorderedListOutlined,LoadingOutlined} from '@ant-design/icons';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -42,6 +42,7 @@ const NewAdvertiesmentRequests = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [vehicleToUpdate, setVehicleToUpdate] = useState(null);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     fetchVehicles(); // Fetch vehicles data when component mounts
   }, []);
@@ -67,7 +68,9 @@ const NewAdvertiesmentRequests = () => {
     console.log("advertiesment",addId)
     try {
       // Replace this with your actual update endpoint and request payload
-      const response = await axios.post(`${apiUrl}advertiesments/updateStatus/${addId}?order=accept`);
+      const response = await axios.post(`${apiUrl}advertiesments/updateStatus/${addId}/accept`, {
+        rejectReason: null // Replace with actual rejectReason value
+      });
       
       message.success("Successfully accepted Advertiesment")
       // Refresh the vehicle list after update
@@ -75,6 +78,7 @@ const NewAdvertiesmentRequests = () => {
     } catch (error) {
       console.error('Error updating vehicle:', error);
     } finally {
+      setLoading(false);
       setIsUpdateModalVisible(false);
     }
   };
@@ -158,12 +162,16 @@ const NewAdvertiesmentRequests = () => {
 
 
   return (
+    <Space>
+ 
     <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', marginTop: '24px' ,border: '0px solid ',
       borderRadius: '10px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.6)',
       overflow: 'hidden'}}>
       <h1>New Advertiesment Requests</h1>
-      <Table  columns={columns} dataSource={vehicles} rowKey="id" />
+      <Spin spinning={loading}>
+        <Table columns={columns} dataSource={vehicles} rowKey="id" />
+      </Spin>
       
       <Modal  visible={isModalVisible} onCancel={handleCancel} footer={null} width={800}>
         {selectedVehicle && (
@@ -275,6 +283,7 @@ const NewAdvertiesmentRequests = () => {
 
 
     </div>
+    </Space>
   );
 };
 

@@ -58,7 +58,8 @@ const ListNewVehicleForm = () => {
    
   try {
     console.log(formData);
-    const response = await axios.post(`${apiUrl}advertiesments/createAdvertiesment`, formData, {
+    const  userId = localStorage.getItem('userId')
+    const response = await axios.post(`${apiUrl}advertiesments/createAdvertiesment/${userId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

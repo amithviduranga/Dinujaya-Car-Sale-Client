@@ -16,6 +16,10 @@ const LoginUser = ({ onFinish, onSwitch, requestedPath }) => {
       if (response.status === 200) {
         const token = response.data?.accessToken;
         localStorage.setItem('userToken', token);
+        const userResponse = await axios.get(`${apiUrl}auth/userDetails/${values.username}`);
+        localStorage.setItem('userId',userResponse.data.id)
+        localStorage.setItem('userName',userResponse.data.username)
+      console.log(userResponse)
         message.success('Login successful!');
         navigate(requestedPath || '/'); // Navigate to requestedPath or default to '/'
         onFinish(values); // Call the onFinish function passed from parent (UserAuthModel)
