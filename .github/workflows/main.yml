@@ -53,7 +53,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: dinujaya-car-sale-client-task-definition.json 
-          container-name: dinujaya-Car-Sale-Client 
+          container-name: dinujaya-Car-Sale-client
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
