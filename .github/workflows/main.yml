@@ -31,6 +31,9 @@ jobs:
         with:
           registry: your-ecr-registry-url  # Replace with your ECR registry URL
           aws-region: eu-north-1
+   
+      - name: Run ESLint with quiet mode
+        run: npx eslint src --quiet || true
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
