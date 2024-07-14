@@ -1,7 +1,6 @@
 import { Linter } from 'eslint';
-const config = new Linter.Config;
 
-export default config({
+const config = {
   env: {
     browser: true,
     es6: true,
@@ -25,4 +24,6 @@ export default config({
     'no-dupe-keys': 'off',
     // Add other rules to suppress as needed...
   },
-});
+};
+
+export default config;
