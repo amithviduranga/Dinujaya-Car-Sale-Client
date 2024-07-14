@@ -1,5 +1,5 @@
 # Step 1: Build the React application
-FROM node:14 AS build
+FROM node:20.14.0 AS build
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Step 2: Serve the React application using 'serve'
-FROM node:14
+FROM node:20.14.0
 
 # Install 'serve' globally
 RUN npm install -g serve
