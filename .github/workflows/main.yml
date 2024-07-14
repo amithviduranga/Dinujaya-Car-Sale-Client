@@ -47,14 +47,14 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: your-ecs-task-definition.json  # Replace with your ECS task definition JSON file
-          container-name: dinujaya-Car-Sale-Client # Replace with your container name in the task definition
+          task-definition: dinujaya-car-sale-client-task-definition.json 
+          container-name: dinujaya-Car-Sale-Client 
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: DCSClient  # Replace with your ECS service name
-          cluster: devCluster2  # Replace with your ECS cluster name
+          service: dinujaya-car-sale-client-service
+          cluster: devCluster2  
           wait-for-service-stability: true
