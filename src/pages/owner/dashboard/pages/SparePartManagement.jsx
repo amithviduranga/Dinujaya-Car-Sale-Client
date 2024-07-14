@@ -4,7 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
-const { Option } = Select;
+
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const SparePartManagement = () => {
