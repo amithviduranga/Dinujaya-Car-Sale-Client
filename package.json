@@ -35,8 +35,18 @@
     "rules": {
       "no-unused-vars": "off",
       "no-dupe-keys": "off"
-     
-    }
+   
+    },
+    "overrides": [
+      {
+        "files": ["src/pages/**/*.jsx"], 
+        "rules": {
+          "react-hooks/exhaustive-deps": "off",
+          "jsx-a11y/anchor-is-valid": "off"
+        
+        }
+      }
+    ]
   },
   "browserslist": {
     "production": [
