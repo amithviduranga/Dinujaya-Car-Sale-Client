@@ -3,11 +3,12 @@ import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { GlobalContext } from '../../../GlobalContext'; // Update the path as per your project structure
 
 const LoginUser = ({ onFinish, onSwitch, requestedPath }) => {
   const navigate = useNavigate();
-
   const apiUrl = process.env.REACT_APP_API_URL;
+  const { setIsAuthenticated } = React.useContext(GlobalContext); // Access setIsAuthenticated from GlobalContext
 
   const handleSubmit = async (values) => {
     try {
@@ -17,10 +18,10 @@ const LoginUser = ({ onFinish, onSwitch, requestedPath }) => {
         const token = response.data?.accessToken;
         localStorage.setItem('userToken', token);
         const userResponse = await axios.get(`${apiUrl}auth/userDetails/${values.username}`);
-        localStorage.setItem('userId',userResponse.data.id)
-        localStorage.setItem('userName',userResponse.data.username)
-      console.log(userResponse)
+        localStorage.setItem('userId', userResponse.data.id);
+        localStorage.setItem('userName', userResponse.data.username);
         message.success('Login successful!');
+        setIsAuthenticated(true); // Update isAuthenticated state after successful login
         navigate(requestedPath || '/'); // Navigate to requestedPath or default to '/'
         onFinish(values); // Call the onFinish function passed from parent (UserAuthModel)
       }

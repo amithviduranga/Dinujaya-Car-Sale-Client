@@ -1,34 +1,14 @@
 import React, { useState } from 'react';
-import { Modal } from 'antd';
+import { Modal, Spin } from 'antd';
 import LoginForm from './LoginUser';
 import RegistrationForm from './RegisterUser';
 
-const UserAuthModel = ({ visible, onCancel, onLoginSuccess, requestedPath }) => {
+const UserAuthModel = ({ visible, onCancel, onLoginSuccess, requestedPath, loading }) => {
   const [isLogin, setIsLogin] = useState(true);
 
   const handleSwitch = () => {
     setIsLogin(!isLogin);
   };
-
-  const handleLogin = async (values) => {
-    // Simulate login logic here or call actual login API
-    console.log('Login values:', values);
-    // Call the parent callback on successful login
-    await onLoginSuccess(values);
-    // Close the modal after successful login
-    onCancel();
-  };
-
-  const handleRegistration = async (values) => {
-    // Simulate registration logic here or call actual registration API
-    console.log('Registration values:', values);
-    // Call the parent callback on successful registration
-    await onLoginSuccess(values);
-    // Close the modal after successful registration
-    onCancel();
-
-  };
-
 
   return (
     <Modal
@@ -43,10 +23,16 @@ const UserAuthModel = ({ visible, onCancel, onLoginSuccess, requestedPath }) => 
           {isLogin ? 'Before posting your vehicle advertisement, you have to log in. If you have already registered, please enter your login credentials here!' : 'Register to post an ad'}
         </p>
       </div>
-      {isLogin ? (
-        <LoginForm onFinish={handleLogin} onSwitch={handleSwitch} requestedPath={requestedPath} />
+      {loading ? (
+        <div style={{ textAlign: 'center' }}>
+          <Spin size="large" />
+        </div>
       ) : (
-        <RegistrationForm onFinish={handleRegistration} onSwitch={handleSwitch} />
+        isLogin ? (
+          <LoginForm onFinish={onLoginSuccess} onSwitch={handleSwitch} requestedPath={requestedPath} />
+        ) : (
+          <RegistrationForm onFinish={onLoginSuccess} onSwitch={handleSwitch} />
+        )
       )}
     </Modal>
   );

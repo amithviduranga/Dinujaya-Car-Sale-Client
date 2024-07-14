@@ -1,6 +1,11 @@
 import React, { useState ,useEffect,useContext} from 'react';
-import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message,Spin,Space } from 'antd';
-import { CloseOutlined, EyeOutlined, CheckOutlined, CheckCircleOutlined, CloseCircleOutlined ,CarOutlined,UnorderedListOutlined,LoadingOutlined} from '@ant-design/icons';
+import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message,Spin,Tag } from 'antd';
+import { CloseOutlined, EyeOutlined, CheckOutlined, CheckCircleOutlined, CloseCircleOutlined ,CarOutlined,UnorderedListOutlined,LoadingOutlined,
+  ClockCircleOutlined,
+ 
+  ExclamationCircleOutlined,
+  MinusCircleOutlined,
+  SyncOutlined,} from '@ant-design/icons';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -43,6 +48,7 @@ const NewAdvertiesmentRequests = () => {
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
   const [vehicleToUpdate, setVehicleToUpdate] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(false); 
   useEffect(() => {
     fetchVehicles(); // Fetch vehicles data when component mounts
   }, []);
@@ -67,6 +73,7 @@ const NewAdvertiesmentRequests = () => {
 
     console.log("advertiesment",addId)
     try {
+      setUpdating(true); // Show spinner
       // Replace this with your actual update endpoint and request payload
       const response = await axios.post(`${apiUrl}advertiesments/updateStatus/${addId}/accept`, {
         rejectReason: null // Replace with actual rejectReason value
@@ -79,6 +86,7 @@ const NewAdvertiesmentRequests = () => {
       console.error('Error updating vehicle:', error);
     } finally {
       setLoading(false);
+      setUpdating(false); // Hide spinner
       setIsUpdateModalVisible(false);
     }
   };
@@ -99,19 +107,14 @@ const NewAdvertiesmentRequests = () => {
     { title: 'Brand Name', dataIndex: 'brandName', key: 'brandName' },
     { title: 'Payment', dataIndex: 'payment', key: 'payment',
       render: (payment) => (
-        <span style={{
-          backgroundColor: payment === 'success' ? '#79D66F' : payment === 'failed' ? '#8B0000' : 'transparent',
-          color: payment === 'success' || payment === 'failed' ? 'white' : 'black',
-          padding: '3px 5px',
-          borderRadius: '5px',
-          border: '1px solid #3E8137',
-          display: 'flex',
-          
-          alignItems: 'center'
-        }}>
-          {payment === 'success' && <CheckCircleOutlined style={{ marginRight: 5 }} />}
-          {payment === 'failed' && <CloseCircleOutlined style={{ marginRight: 5 }} />}
+        <span >
+          {payment === 'success' &&  <Tag  icon={<CheckCircleOutlined />} color="success"   style={{ fontSize: '14px', padding: '8px 16px' }}>
           {payment}
+      </Tag>}
+          {payment === 'failed' &&  <Tag icon={<CloseCircleOutlined />} color="error" style={{ fontSize: '14px', padding: '8px 16px' }}>
+          {payment}
+      </Tag>}
+       
         </span>
       )
     },
@@ -162,7 +165,7 @@ const NewAdvertiesmentRequests = () => {
 
 
   return (
-    <Space>
+  
  
     <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', marginTop: '24px' ,border: '0px solid ',
       borderRadius: '10px',
@@ -273,17 +276,20 @@ const NewAdvertiesmentRequests = () => {
         )}
       </Modal>
       <Modal
+    
   title="Accept Advertiesment"
   visible={isUpdateModalVisible}
   onOk={handleUpdate}
   onCancel={() => setIsUpdateModalVisible(false)}
 >
+<Spin spinning={updating} indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} >
   <p>Are you sure you want to accept this advertisement?</p>
+  </Spin>
 </Modal>
 
 
     </div>
-    </Space>
+ 
   );
 };
 

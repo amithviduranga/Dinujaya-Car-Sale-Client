@@ -21,6 +21,7 @@ import PostAnAdd from './pages/global/PostAnAdd.jsx'
 import PayForAdvertiesment from './pages/global/PayForAdvertiesment.jsx';
 import {GlobalProvider} from './GlobalContext.js'
 import { GlobalContext } from './GlobalContext';
+import ProtectedRoute from './ProtectedRoute';
 function App() {
   // Set global configuration for the message component
 message.config({
@@ -67,8 +68,22 @@ return (
       <Route path='/vehicleCategories/lorries' element={<Lorries/>} />
       <Route path='/vehicleCategories/cars' element={<Cars/>} />
       <Route path="/vehicle/:id" element={<VehicleDetail />} />
-      <Route path="/post-ad/" element={<PostAnAdd />} />
-      <Route path="/payment-success" element={<PayForAdvertiesment />} />
+      <Route
+          path="/post-ad/"
+          element={
+            <ProtectedRoute>
+              <PostAnAdd />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payment-success"
+          element={
+            <ProtectedRoute>
+              <PayForAdvertiesment />
+            </ProtectedRoute>
+          }
+        />
 
       
 

@@ -1,6 +1,6 @@
 import React, { useState ,useEffect,useContext } from 'react';
-import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message,Spin } from 'antd';
-import { CarOutlined, ToolOutlined, UnorderedListOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Tag, Image, Select, Table, message,Spin } from 'antd';
+import { CarOutlined, CloseCircleOutlined, CheckCircleOutlined,UnorderedListOutlined, UploadOutlined, EditOutlined, InfoCircleFilled ,SyncOutlined} from '@ant-design/icons';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -43,7 +43,7 @@ const ListNewVehicleForm = () => {
   const { setResponse } = useContext(GlobalContext);
  
   const onFinish = async (values) => {
-    console.log('Form values:', values);
+    window.scrollTo(0, 0); 
   setLoading(true)
   const formData = new FormData();
   formData.append('advertiesment', new Blob([JSON.stringify(values)], { type: 'application/json' }));
@@ -281,23 +281,26 @@ const ListNewVehicleForm = () => {
   );
 };
 
-const ShowListedVehicles = () => {
+const ShowUserListedAdvertiesments = () => {
 
-  const [vehicles, setVehicles] = useState([]);
+  const [advertiesmentStatus, setAdvertiesmentStatus] = useState([]);
   useEffect(() => {
-    fetchVehicles(); // Fetch vehicles data when component mounts
+    fetchAdvertiesments(); // Fetch vehicles data when component mounts
   }, []);
-
-  const fetchVehicles = async () => {
+  const userId = localStorage.getItem('userName');
+  const fetchAdvertiesments = async () => {
     try {
-      const response = await axios.get(`${apiUrl}vehicle`); // Replace 'your_endpoint_url' with your actual endpoint
-      setVehicles(response.data); // Update vehicles state with data from API response
+      const response = await axios.get(`${apiUrl}advertiesments/getAllAdvertiesments`);
+     
+      const filteredData = response.data.filter(ad => ad.createdBy === userId);
+      console.log(filteredData)
+      setAdvertiesmentStatus(filteredData); // Update vehicles state with data from API response
     } catch (error) {
       console.error('Error fetching vehicles:', error);
     }
   };
 
-  const handleEdit = (id) => {
+  const showDetails = (id) => {
     console.log('Edit vehicle', id);
   };
 
@@ -306,38 +309,56 @@ const ShowListedVehicles = () => {
   };
 
   const columns = [
-    { title: 'Reg No', dataIndex: 'registrationNumber', key: 'registrationNumber' },
-    { title: 'Province Code', dataIndex: 'provinceCode', key: 'provinceCode' },
+    { title: 'Reference No', dataIndex: 'id', key: 'id' },
     { title: 'Model Name', dataIndex: 'modelName', key: 'modelName' },
     { title: 'Brand Name', dataIndex: 'brandName', key: 'brandName' },
     { title: 'Color', dataIndex: 'color', key: 'color' },
-    { title: 'Condition', dataIndex: 'vehicleCondition', key: 'vehicleCondition' },
     { title: 'Fuel Type', dataIndex: 'fuelType', key: 'fuelType' },
-    { title: 'Manufacture Year', dataIndex: 'manufactureYear', key: 'manufactureYear' },
     { title: 'Milage (Km)', dataIndex: 'mileage', key: 'mileage' },
     { title: 'Price(LKR)', dataIndex: 'price', key: 'price' },
     { title: 'Listed On', dataIndex: 'createdOn', key: 'createdOn',
       render: (createdOn) => dayjs(createdOn).format('YYYY-MM-DD'),
      },
     {title: 'Listed By', dataIndex: 'createdBy', key: 'createdBy' },
+    { title: 'Status', dataIndex: 'status', key: 'status',
+      render: (status) => (
+        <span >
+          {status === 0 &&  <Tag  icon={<SyncOutlined spin />} color="warning"   style={{ fontSize: '14px', padding: '8px 16px' }}>
+          pending
+      </Tag>}
+          {status === 1 &&  <Tag icon={<CheckCircleOutlined />} color="success" style={{ fontSize: '14px', padding: '8px 16px' }}>
+          Approved
+      </Tag>}
+      {status === 2 &&  <Tag icon={<CloseCircleOutlined />} color="error" style={{ fontSize: '14px', padding: '8px 16px' }}>
+          Rejected
+      </Tag>}
+       
+        </span>
+      ) },
    
-    {title: 'Modified By', dataIndex: 'modifiedBy', key: 'createdBy' },
     {
       title: 'Actions',
       key: 'actions',
       render: (text, record) => (
         <span>
-          <Button icon={<EditOutlined />} onClick={() => handleEdit(record.id)}></Button>
-          <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}></Button>
+          <Button icon={<InfoCircleFilled />} onClick={() => showDetails(record.id)}></Button>
         </span>
       ),
     },
   ];
 
   return (
-    <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', marginTop: '24px' }}>
-      <h1>Show Listed Vehicles</h1>
-      <Table columns={columns} dataSource={vehicles} rowKey="id" />
+    <div style={{border: '0px solid ',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0.6, 0.6)',
+      overflow: 'hidden',
+      padding:30}}>
+      <h1 >Check Advrtiesment  Status</h1>
+      <Table style={{border: '0px solid ',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0.1, 0.1, 0.1, 0.1)',
+      
+      padding:30}} columns={columns} dataSource={advertiesmentStatus} rowKey="id" />
     </div>
   );
 };
@@ -352,7 +373,7 @@ const ListNewVehicle = () => {
       case 'list-new-vehicle':
         return <ListNewVehicleForm />;
       case 'show-listed-vehicles':
-        return <ShowListedVehicles />;
+        return <ShowUserListedAdvertiesments />;
       default:
         return <ListNewVehicleForm />;
     }

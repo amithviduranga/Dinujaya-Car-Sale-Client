@@ -42,13 +42,17 @@ const PaymentSuccess = () => {
      
     <Result
     icon={<SmileOutlined style={{ color: '#52c41a', fontSize: 188 }} />}
-    title="Thank You for Your Payment"
-    subTitle="Your advertisement request has been sent to the admin to approve.Admin will accept this as soon as possible"
+    title="Thank You for the Payment"
+    subTitle={
+      <span style={{ fontSize: '18px' }}>
+        Your advertisement request has been sent to the admin for approval. <br/>Admin will review and approve it soon after carefull reviewing.
+      </span>
+    }
     extra={[
       <Button type="primary" key="list" onClick={() => navigate('/')}>
         Home Page
       </Button>,
-      <Button key="another" onClick={() => navigate('/post-ad')}>
+      <Button key="primary" onClick={() => navigate('/post-ad')}>
         Create Another Advertisement
       </Button>,
     ]}

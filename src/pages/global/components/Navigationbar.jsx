@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Menu, Button, Avatar, Dropdown, message } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { CarOutlined, DollarOutlined, ToolOutlined, PlusOutlined, HomeOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import logo from "../../../asserts/logo.png";
 import AuthModal from './UserAuthModel';
 import axios from 'axios';
+import { GlobalContext } from '../../../GlobalContext';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const { SubMenu } = Menu;
 
 const NavigationBar = () => {
+
+  const { logout, isAuthenticated } = useContext(GlobalContext);
+
   const navigate = useNavigate();
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,7 +25,7 @@ const NavigationBar = () => {
     const token = localStorage.getItem('userToken');
     if (token) {
       setIsLoggedIn(true);
-      const userName = localStorage.getItem('userName')
+      const userName = localStorage.getItem('userName');
       setUsername(userName);
     }
   }, []);
@@ -32,30 +36,28 @@ const NavigationBar = () => {
   };
 
   const handleCancel = () => {
-    
     setModalVisible(false);
   };
 
-
   const handleLogout = () => {
     localStorage.removeItem('userToken');
-    localStorage.removeItem('userId')
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
     setIsLoggedIn(false);
+    logout();
     setUsername("");
     message.success('Logout successful!');
   };
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
-    // Navigate to the requested path after login success
     navigate(requestedPath || '/'); // Navigate to requested path or home if not specified
     setRequestedPath(""); // Clear the requested path
     setModalVisible(false); // Close the modal
   };
 
   const checkUserToken = (path) => {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
+    if (!isAuthenticated) {
       showModal(path); // Show the modal with the requested path
     } else {
       navigate('/post-ad/'); // Navigate to post-ad page if already logged in
@@ -162,7 +164,7 @@ const NavigationBar = () => {
         <Dropdown overlay={menu} trigger={['click']}>
           <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', color: 'white' }}>
             <Avatar size={64} icon={<UserOutlined />} />
-            <span style={{ marginLeft: 10 ,fontSize:16 }}>Hi {username}</span>
+            <span style={{ marginLeft: 10, fontSize: 16 }}>Hi {username}</span>
           </div>
         </Dropdown>
       ) : (
