@@ -2,7 +2,7 @@ import React from "react";
 import {Flex, Menu} from "antd"
 import {FaLeaf} from 'react-icons/fa6'
 import './Dashboard.css'
-import { UserOutlined ,ProfileOutlined,LoginOutlined,UnorderedListOutlined,ToolOutlined } from "@ant-design/icons";
+import { UserOutlined ,ProfileOutlined,LoginOutlined,UnorderedListOutlined,ToolOutlined,CommentOutlined } from "@ant-design/icons";
 import  Logoimage from '../../../asserts/Dashboard Logo.png'
 
 const Sidebar= ({ onMenuClick })=>{
@@ -36,7 +36,11 @@ const Sidebar= ({ onMenuClick })=>{
     key:'4',
     icon:<UnorderedListOutlined />,
     label:'Advertiesments'
- },
+ }, {
+  key:'5',
+  icon:<CommentOutlined />,
+  label:'Live Chats'
+},
      {
     
       icon:<LoginOutlined />,

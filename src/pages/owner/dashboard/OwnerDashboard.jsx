@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import ListVehicles from './pages/ListVehicles';
 import SparePartManagement from './pages/SparePartManagement';
 import './Dashboard.css'
+import AdminChatComponent from './chats/AdminChatComponent';
 
 
 const {Sider,Header,Content} = Layout;
@@ -27,6 +28,8 @@ const OwnerDashboard = () =>{
            return <SparePartManagement />;
         case '4':
          return <Advertiesment />;
+         case '5':
+         return <AdminChatComponent />;
         default:
           // return <Dashboard />;
       }

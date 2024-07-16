@@ -22,6 +22,7 @@ import PayForAdvertiesment from './pages/global/PayForAdvertiesment.jsx';
 import {GlobalProvider} from './GlobalContext.js'
 import { GlobalContext } from './GlobalContext';
 import ProtectedRoute from './ProtectedRoute';
+import ChatIcon from './pages/global/chatSection/ChatIcon.jsx';
 function App() {
   // Set global configuration for the message component
 message.config({
@@ -92,6 +93,8 @@ return (
       <Route path='/admin/register' element={<Register />} />
       <Route path='/admin/dashboard' element={<OwnerDashboard />} />
     </Routes>
+
+    {localStorage.getItem('userName') && <ChatIcon />}
   </div>
 );
 }

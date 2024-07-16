@@ -7,7 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import banner1 from '../../asserts/car1.jpg';
 import banner2 from '../../asserts/car2.jpg';
 import banner3 from '../../asserts/car4.jpg';
+import statistics from '../../asserts/statistics.jpg'
+import aboutUs from '../../asserts/aboutUS.jpg'
 import { CarOutlined, DashboardOutlined } from '@ant-design/icons';
+import CountUp from 'react-countup';
+import { useInView } from 'react-intersection-observer';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const { Header, Content, Footer, Sider } = Layout;
@@ -17,6 +21,10 @@ const MainPage = () => {
   const [newArrivals, setNewArrivals] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { ref, inView } = useInView({
+    triggerOnce: true,  // Trigger only once
+    threshold: 0.5,     // Trigger when 10% of the section is in view
+  });
 
   useEffect(() => {
     fetchVehicles(); // Fetch vehicles data when component mounts
@@ -139,69 +147,155 @@ const MainPage = () => {
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h2>EXPLORE YOUR DREAM VEHICLE</h2>
-            <p style={{ fontSize: '24px', color: '#888' }}>Check out the latest vehicles added to our collection....</p>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' ,borderRadius:"20px"}}>
-      <Search
-        placeholder="Search In Cars...."
-        enterButton="Search"
-        size="large"
-        style={{ width: '50%',borderWidth: '12px', 
-        borderColor: '#1890ff',marginTop:40 , border: '1px solid #1890ff', // Adding border with primary color
-        borderRadius: '10px', // Adding border radius for smoother edges
-        boxShadow: '0 3px 8px rgba(0, 0, 0, 0.5)', // Adding shadow for better highlight
-        overflow: 'hidden' }}
-      />
-    </div>
-      <div style={{ padding: '20px 0',marginTop:80 }}>
-        {loading ? (
-          <Spin size="large" />
-        ) : (
-          <List
-          grid={{ gutter: 17, column: 5 }}
-          dataSource={allVehicles}
-          renderItem={item => {
-            const mainImage = item.images.find(img => img.mainImage);
-
-            return (
-              <List.Item >
-                <Card
-            
-            style={{ 
-              height: '400px', // Fixed height for the card
-              border: '1px solid #1890ff', // Adding border with primary color
-              borderRadius: '10px', // Adding border radius for smoother edges
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.6)', // Adding shadow for better highlight
-              overflow: 'hidden',
-               marginBottom:'80px'  // Ensuring content does not overflow
-              
-            }}// Fixed height for the card
-                  cover={
-                    <div style={{ height: '180px', overflow: 'hidden' }}>
-                      <img
-                        alt={item.modelName}
-                        src={`data:image/jpeg;base64,${mainImage.data}`}
-                        style={{ width: '100%', height: '90%', objectFit: 'cover' }}
-                      />
-                    </div>
-                  }
-                >
-                  <a style={{ fontWeight: 500, fontSize: 17 }}>{item.modelName} {item.brandName} {item.manufactureYear} </a>
-                  <div>
-                    <p><DashboardOutlined style={{ marginRight: 8  }} /> Mileage: <span style={{ fontWeight: 'bold'  }}> {item.mileage} km </span></p>
-                    <p><CarOutlined style={{ marginRight: 8 }} />Condition :<span style={{ fontWeight: 'bold' }}> {item.vehicleCondition}</span></p>
-                  </div>
-                  <p style={{ fontWeight: 600, fontSize:20, color: "green" ,textAlign:"left"}}> RS : {item.price}</p>
-                </Card>
-              </List.Item>
-            );
-          }}
+  
+      <div style={{ 
+        position: 'relative', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        borderRadius: '20px',
+        overflow: 'hidden',
+        width: '100%',
+        margin: '0 auto'
+      }}>
+        <img 
+          src={statistics}
+          alt="Banner" 
+          style={{ 
+            width: '100%', 
+            height: '10%',
+            borderRadius: '20px',
+          }} 
         />
-        )}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0.8, 0.6, 0.8, 0.8)',
+          display: 'flex',
+          flexDirection: 'Column',
+          alignItems: 'center',
+          color: '#fff',
+          borderRadius: '20px',
+        }}  ref={ref}>
+          <div style={{ textAlign:'center', alignItems: 'center',width:"80%" }}>
+            <h1 style={{fontSize: '40px', marginBottom:60 ,marginTop:50}}>STATISTICS</h1>
+            <p style={{fontSize: '20px', color: '#889', marginBottom:60 ,marginTop:50}}>
+          Explore the impressive numbers behind our success: the vast array of vehicles in our collection, our growing community of active customers, and the numerous advertisements we host.<br/> Join us and be part of our ever-expanding journey!
+</p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'Row', alignItems: 'center', gap: '100px' }}>
+            
+            <div style={{ fontSize: '44px' }}>
+            {inView &&<CountUp end={200} duration={2} />}+
+              <p style={{ fontSize: '28px',marginTop:8,fontWeight:700 }}>ACTIVE MEMBERS</p>
+            </div>
+            <div style={{ fontSize: '44px' }}>
+             {inView &&  <CountUp end={500} duration={2} />}+
+              <p style={{ fontSize: '28px',marginTop:8, fontWeight:700 }}>VEHICLES</p>
+            </div>
+            <div style={{ fontSize: '44px' }}>
+            {inView &&  <CountUp end={30} duration={2} />}+
+              <p style={{ fontSize: '28px',marginTop:8 ,fontWeight:700  }}>ADVERTIESMENTS</p>
+            </div>
+            <div style={{ fontSize: '44px' }}>
+            {inView &&  <CountUp end={5} duration={2} />}+
+              <p style={{ fontSize: '28px',marginTop:8 ,fontWeight:700  }}>VEHICLE CATEGORIES</p>
+            </div>
+          </div>
+          
+        </div>
       </div>
-      </Content>
-      </Layout>
+    </div>
+  
+
+    <div style={{ textAlign: 'center', marginTop: 100 }}>
+    <h1 style={{fontSize: '40px'}}>ABOUT BUSSINESS</h1>
+    <div style={{alignItems: 'center',display:"felx"}}>
+    <p style={{fontSize: '20px', 
+  color: '#889', 
+  marginBottom: '60px', 
+  marginTop: '50px',
+  width: '80%', // Define the width
+  marginLeft: 'auto', 
+  marginRight: 'auto', // Center the paragraph
+  textAlign: 'center' }}>
+    We are dedicated to providing a diverse collection of vehicles to meet the needs of our growing community.  
+    With a commitment to quality and customer satisfaction, we continuously expand our offerings and services. 
+</p>
+</div>
+          </div>
+          <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <div style={{ 
+        position: 'relative', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        borderRadius: '20px',
+        overflow: 'hidden',
+        width: '100%',
+        margin: '0 auto',
+        height: '400px' // Set a fixed height for the container
+      }}>
+        <div style={{ 
+          flex: 1,
+          height: '100%'
+        }}>
+          <img 
+            src={aboutUs}
+            alt="Banner" 
+            style={{ 
+              width: '100%', 
+              height: '100%',
+              objectFit: 'cover', // Ensure the image covers the div
+              borderRadius: '20px 0 0 20px', // Round only the left side corners
+            }} 
+          />
+        </div>
+        <div style={{
+          flex: 1,
+          position: 'relative',
+          height: '100%',
+          backgroundColor: 'rgba(0.8, 0.6, 0.8, 0.8)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          color: '#fff',
+          borderRadius: '0 20px 20px 0', // Round only the right side corners
+          padding: '10px'
+        }} >
+          <div style={{ textAlign:'center', alignItems: 'center', width:"80%" }}>
+            <h1>STORY  OF  <span style={{color:"#79D56F"}}>DINUJAYA  CAR  SALE</span> </h1>
+            <div>
+            </div>
+            </div>
+           <span style={{fontFamily: ' Arial, sans-serif', 
+  fontSize: '15px', 
+  flex: 1,
+          position: 'relative',
+          height: '100%',
+  padding: '0px 90px 0px 90px',
+
+  textAlign: 'justify',
+  }}> Welcome to DinuJaya Car Sale, your trusted destination for a diverse selection of high-quality vehicles. 
+  We pride ourselves on offering a wide range of cars to meet the unique needs of our valued customers.
+  <br/> <br/>
+  With a steadfast commitment to excellence, we ensure that every vehicle in our collection meets the highest standards of quality and performance. 
+  Our dedicated team is here to provide exceptional customer service, guiding you through every step of your car-buying journey. 
+  Whether you're looking for a sleek sedan, a rugged SUV, or a family-friendly minivan, <br/> <br/> DinuJaya Car Sale has the perfect vehicle for you. 
+  Join our growing community of satisfied customers and experience the difference with DinuJaya Car Sale.
+  </span>
+            </div>
+         
+          
+        
+      </div>
+    </div>
+    
+  </Content>
+</Layout>
 
     </div>
   );
