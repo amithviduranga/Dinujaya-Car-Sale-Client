@@ -24,7 +24,7 @@ export default function Registration() {
       const response = await axios.post(`${apiUrl}auth/register/1`, values); 
       if (response.status === 200) {
         message.success("Registration successful. Please login.");
-       navigate("/login")
+       navigate("/admin/login")
         
       } else {
         // Handle other status codes

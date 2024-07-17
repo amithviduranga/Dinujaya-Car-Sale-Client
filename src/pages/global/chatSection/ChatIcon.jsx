@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCommentAlt } from '@fortawesome/free-solid-svg-icons';
 import { CommentOutlined } from '@ant-design/icons';
-import { Icon } from 'antd';
+import { Tag  } from 'antd';
 import ChatBox from './ChatBox'; // Assuming you have a ChatBox component
 
 const ChatIcon = () => {
@@ -20,7 +20,7 @@ const ChatIcon = () => {
       zIndex: '1000', // Ensure it's above other content
     }}>
  {showChatBox && <ChatBox onClose={() => setShowChatBox(false)} />}
-      <span style={{ marginRight: '10px', fontSize:15}}>Chat with us</span>
+ <Tag style={{boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.8)"}} color="#f50"><span style={{ marginRight: '10px', fontSize:16 ,fontWeight:500,}}>Chat with us</span></Tag>  
       <CommentOutlined style={{ fontSize: '44px', cursor: 'pointer', color:'green'}} onClick={toggleChatBox} />
     </div>
   );

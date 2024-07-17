@@ -84,15 +84,7 @@ const MainPage = () => {
     </div>
     <Layout>  
         <Content style={{ padding: '0 100px' }}>
-        <Breadcrumb style={{ margin: '16px 0' }}>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>List</Breadcrumb.Item>
-          <Breadcrumb.Item>App</Breadcrumb.Item>
-        </Breadcrumb>
-
-       
-
-
+      
      {/* New Arrivals Section */}
      <div style={{ textAlign: 'center', marginTop: '50px' }}>
             <h2>NEW ARRIVALS</h2>

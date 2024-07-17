@@ -22,6 +22,7 @@ import PayForAdvertiesment from './pages/global/PayForAdvertiesment.jsx';
 import {GlobalProvider} from './GlobalContext.js'
 import { GlobalContext } from './GlobalContext';
 import ProtectedRoute from './ProtectedRoute';
+import ProtectedAdminRoute from './ProtectedAdminRoute.jsx'
 import ChatIcon from './pages/global/chatSection/ChatIcon.jsx';
 function App() {
   // Set global configuration for the message component
@@ -91,10 +92,10 @@ return (
       {/* Admin Routes */}
       <Route path='/admin/login' element={<Login />} />
       <Route path='/admin/register' element={<Register />} />
-      <Route path='/admin/dashboard' element={<OwnerDashboard />} />
+      <Route path='/admin/dashboard' element={ <ProtectedAdminRoute><OwnerDashboard /></ProtectedAdminRoute>} />
     </Routes>
 
-    {localStorage.getItem('userName') && <ChatIcon />}
+    {!isAdminPath && localStorage.getItem('userName') && <ChatIcon />}
   </div>
 );
 }

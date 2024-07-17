@@ -28,11 +28,7 @@ export default function App() {
       }
       // Store the token (e.g., in localStorage)
       localStorage.setItem("token", accessToken);
-   
-
-     console.log("res",response)
-
-
+  
 
       // Redirect or perform other actions
     } catch (error) {
@@ -115,9 +111,9 @@ export default function App() {
             />
           </svg>
 
-          <Title style={styles.title}>Welcome <br></br> Dinujaya Car Sale</Title>
+          <Title style={styles.title}>Welcome <br></br>  Admin Dashboard</Title>
           <Text style={styles.text}>
-            Welcome back to <span style={styles.boldText}>Dinujaya Car Sale</span>! <br></br>Please enter your details below to sign in.
+            Welcome back to <span style={styles.boldText}>Dinujaya Car Sale Admin Dashbord</span>! <br></br>Please enter your details below to sign in.
           </Text>
         </div>
         <Form

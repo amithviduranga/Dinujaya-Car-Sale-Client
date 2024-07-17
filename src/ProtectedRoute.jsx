@@ -4,7 +4,8 @@ import { Spin } from 'antd';
 import { GlobalContext } from './GlobalContext';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useContext(GlobalContext);
+  const { isAuthenticated, loading,isAdminAuthenticated } = useContext(GlobalContext);
+  
 
   if (loading) {
     return <Spin tip="Logging out..."></Spin>;

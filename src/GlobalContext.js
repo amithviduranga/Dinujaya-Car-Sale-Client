@@ -4,7 +4,8 @@ export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
   const [response, setResponse] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('userToken')); // Initialize from localStorage
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('userToken')); 
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(!!localStorage.getItem('token')); 
   const [loading, setLoading] = useState(false);
 
   const checkAuthStatus = () => {
@@ -13,6 +14,15 @@ export const GlobalProvider = ({ children }) => {
       setIsAuthenticated(false);
     } else {
       setIsAuthenticated(true);
+    }
+  };
+
+  const checkAdminAuthStatus = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setIsAdminAuthenticated(false);
+    } else {
+      setIsAdminAuthenticated(true);
     }
   };
 
@@ -25,10 +35,11 @@ export const GlobalProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuthStatus();
+    checkAdminAuthStatus();
   }, []);
 
   return (
-    <GlobalContext.Provider value={{ response, setResponse, isAuthenticated, setIsAuthenticated, loading, logout }}>
+    <GlobalContext.Provider value={{ response, setResponse, isAuthenticated, setIsAuthenticated, loading, logout ,isAdminAuthenticated,setIsAdminAuthenticated}}>
       {children}
     </GlobalContext.Provider>
   );
