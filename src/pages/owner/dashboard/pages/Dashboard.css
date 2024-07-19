@@ -1,5 +1,5 @@
 .dashboard {
-    padding: 20px;
+   
   }
   
   .boxes {
@@ -7,24 +7,160 @@
     justify-content: space-between;
   }
   
-  .box {
+  .box-1 {
     background-color: #f0f2f5;
     border-radius: 10px;
     padding: 20px;
+    border: 2px solid #c59eee ;
+    background: rgb(243,232,255);
+   
     text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s;
   }
-  
-  .box:hover {
-    transform: scale(1.05);
+
+  .box-2 {   
+    background-color: #f0f2f5;
+    border-radius: 10px;
+    padding: 20px;
+    border: 2px solid #ffcbd0 ;
+    background: rgb(255,226,229);
+
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s;
+  } 
+  .box-3 {   
+    background-color: #f0f2f5;
+    border-radius: 10px;
+    padding: 20px;
+    border: 2px solid #12dc59 ;
+    background: rgb(220,252,231);
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s;
+  } 
+  .box-4 {   
+    background-color: #f0f2f5;
+    border-radius: 10px;
+    padding: 20px;
+    border: 2px solid #ffba31 ;
+    background: rgb(255,244,222);
+
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s;
+  } 
+  .outer-box {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    padding-top: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
   }
+  .icon-circle-1 {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background-color:#a868eb ;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: large;
+  }
+  .icon-circle-2 {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background-color:#ffa0aa ;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: large;
+  }
+  .icon-circle-3 {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background-color:#12dc59;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: large;
+  }
+
+  .icon-circle-4 {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background-color:#ffba31;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: large;
+  }
+ 
+  
+  .meter {
+    position: relative;
+    width: 50px;
+    height: 100px;
+
+  }
+  
+  
+  
+ 
+  
+  .inside-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    background-color: white;
+    color: #1890ff;
+    font-size: 20px;
+  }
+  
+ 
+
+ 
   
   h2 {
     margin-bottom: 10px;
+    font-size: 22px;
   }
   
   p {
     margin: 0;
+  }
+
+  .small-box {
+    height: 100%;
   }
   

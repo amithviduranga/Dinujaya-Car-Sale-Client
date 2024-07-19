@@ -1,11 +1,9 @@
 
 .header{
-    padding-top: 1px;
+    
     background: #fff;
 }
-.content{
-
-    margin:24px 16px;
+.content{  
     padding: 20px;
 }
 .triger-btn{
