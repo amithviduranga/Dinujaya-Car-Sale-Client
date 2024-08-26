@@ -24,6 +24,8 @@ import { GlobalContext } from './GlobalContext';
 import ProtectedRoute from './ProtectedRoute';
 import ProtectedAdminRoute from './ProtectedAdminRoute.jsx'
 import ChatIcon from './pages/global/chatSection/ChatIcon.jsx';
+import AppFooter from './pages/global/AppFooter.jsx';
+import AdvertisementList from './pages/global/AdvertiesmentList.jsx';
 function App() {
   // Set global configuration for the message component
 message.config({
@@ -70,6 +72,7 @@ return (
       <Route path='/vehicleCategories/lorries' element={<Lorries/>} />
       <Route path='/vehicleCategories/cars' element={<Cars/>} />
       <Route path="/vehicle/:id" element={<VehicleDetail />} />
+      <Route path="/advertisements" element={<AdvertisementList />} />
       <Route
           path="/post-ad/"
           element={
@@ -96,6 +99,7 @@ return (
     </Routes>
 
     {!isAdminPath && localStorage.getItem('userName') && <ChatIcon />}
+    {!isAdminPath && <AppFooter />} {/* Add the footer here */}
   </div>
 );
 }

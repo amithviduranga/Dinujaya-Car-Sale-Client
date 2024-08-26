@@ -8,7 +8,7 @@ const { Header, Content, Footer } = Layout;
 const Main = () => (
     <Layout>
       <MainPage />
-    <Footer style={{ textAlign: 'center' }}>Ant Design ©2024 Created by Ant UED</Footer>
+    
   </Layout>
 );
 

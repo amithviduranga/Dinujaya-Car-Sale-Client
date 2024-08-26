@@ -138,7 +138,7 @@ const NavigationBar = () => {
             fontWeight: 600,
           }}
         >
-          Advertisements
+         <Link to="/advertisements">Advertisements</Link>
         </Menu.Item>
         <Menu.Item
           key="4"
