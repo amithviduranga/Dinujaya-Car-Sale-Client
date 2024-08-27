@@ -26,6 +26,7 @@ import ProtectedAdminRoute from './ProtectedAdminRoute.jsx'
 import ChatIcon from './pages/global/chatSection/ChatIcon.jsx';
 import AppFooter from './pages/global/AppFooter.jsx';
 import AdvertisementList from './pages/global/AdvertiesmentList.jsx';
+import AdvertisementDetail from './pages/global/AdvertisementDetail.jsx';
 function App() {
   // Set global configuration for the message component
 message.config({
@@ -73,6 +74,7 @@ return (
       <Route path='/vehicleCategories/cars' element={<Cars/>} />
       <Route path="/vehicle/:id" element={<VehicleDetail />} />
       <Route path="/advertisements" element={<AdvertisementList />} />
+      <Route path='/advertiesments/details/:id' element={<AdvertisementDetail />} />
       <Route
           path="/post-ad/"
           element={
