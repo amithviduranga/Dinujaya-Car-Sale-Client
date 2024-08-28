@@ -73,10 +73,10 @@ const NewAdvertiesmentRequests = () => {
 
     console.log("advertiesment",addId)
     try {
-      setUpdating(true); // Show spinner
-      // Replace this with your actual update endpoint and request payload
+      setUpdating(true); 
+      
       const response = await axios.post(`${apiUrl}advertiesments/updateStatus/${addId}/accept`, {
-        rejectReason: null // Replace with actual rejectReason value
+        rejectReason: null 
       });
       
       message.success("Successfully accepted Advertiesment")

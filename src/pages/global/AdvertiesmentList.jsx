@@ -24,6 +24,7 @@ const AdvertisementList = () => {
     axios.get(`${apiUrl}advertiesments/getAllAdvertiesments`)
       .then(response => {
         const successfulAds = response.data.filter(ad => ad.status === 1);
+       
         setAdvertisements(successfulAds);
         setFilteredAdvertisements(successfulAds); // Initially display all successful ads
       })

@@ -1,6 +1,6 @@
 import React, { useState ,useEffect,useContext } from 'react';
-import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Tag, Image, Select, Table, message,Spin } from 'antd';
-import { CarOutlined, CloseCircleOutlined, CheckCircleOutlined,UnorderedListOutlined, UploadOutlined, EditOutlined, InfoCircleFilled ,SyncOutlined} from '@ant-design/icons';
+import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Tag, Image, Select, Table, message,Spin,Modal } from 'antd';
+import { CarOutlined, CloseCircleOutlined,ExclamationCircleOutlined, CheckCircleOutlined,UnorderedListOutlined, UploadOutlined, EditOutlined, InfoCircleFilled ,SyncOutlined} from '@ant-design/icons';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ import { GlobalContext } from '../../GlobalContext';
 const {  Content } = Layout;
 const { Option } = Select;
 const { Dragger } = Upload;
+const { confirm } = Modal;
 const apiUrl = process.env.REACT_APP_API_URL;
 
 
@@ -283,6 +284,7 @@ const ListNewVehicleForm = () => {
 
 const ShowUserListedAdvertiesments = () => {
 
+  
   const [advertiesmentStatus, setAdvertiesmentStatus] = useState([]);
   useEffect(() => {
     fetchAdvertiesments(); // Fetch vehicles data when component mounts
@@ -300,6 +302,28 @@ const ShowUserListedAdvertiesments = () => {
     }
   };
 
+  const markAsSold = async (id) => {
+    try {
+      await axios.post(`${apiUrl}advertiesments/updateStatus/${id}/sold`)
+      fetchAdvertiesments(); // Reload table data after updating status
+    } catch (error) {
+      console.error('Error updating advertisement status:', error);
+    }
+  };
+
+  const showConfirm = (id) => {
+    confirm({
+      title: 'Are you sure you want to mark this advertisement as sold?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'This action cannot be undone.Your Advertiesment will be disapear soon from out website',
+      onOk() {
+        markAsSold(id);
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  };
   const showDetails = (id) => {
     console.log('Edit vehicle', id);
   };
@@ -322,30 +346,29 @@ const ShowUserListedAdvertiesments = () => {
     {title: 'Listed By', dataIndex: 'createdBy', key: 'createdBy' },
     { title: 'Status', dataIndex: 'status', key: 'status',
       render: (status) => (
-        <span >
-          {status === 0 &&  <Tag  icon={<SyncOutlined spin />} color="warning"   style={{ fontSize: '14px', padding: '8px 16px' }}>
-          pending
-      </Tag>}
-          {status === 1 &&  <Tag icon={<CheckCircleOutlined />} color="success" style={{ fontSize: '14px', padding: '8px 16px' }}>
-          Approved
-      </Tag>}
-      {status === 2 &&  <Tag icon={<CloseCircleOutlined />} color="error" style={{ fontSize: '14px', padding: '8px 16px' }}>
-          Rejected
-      </Tag>}
-       
-        </span>
+        <span>
+        {status === 0 && <Tag icon={<SyncOutlined spin />} color="warning" style={{ fontSize: '14px', padding: '8px 16px' }}>Pending</Tag>}
+        {status === 1 && <Tag icon={<CheckCircleOutlined />} color="success" style={{ fontSize: '14px', padding: '8px 16px' }}>Approved</Tag>}
+        {status === 2 && <Tag icon={<CloseCircleOutlined />} color="error" style={{ fontSize: '14px', padding: '8px 16px' }}>Rejected</Tag>}
+        {status === 3 && <Tag icon={<CheckCircleOutlined />} color="orange" style={{ fontSize: '14px', padding: '8px 16px' }}>Sold</Tag>}
+      </span>
       ) },
    
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (text, record) => (
-        <span>
-          <Button icon={<InfoCircleFilled />} onClick={() => showDetails(record.id)}></Button>
-        </span>
-      ),
-    },
-  ];
+      {
+        title: 'Actions',
+        key: 'actions',
+        render: (text, record) => (
+          <Button
+            style={{ backgroundColor: '#52c41a', color: 'white' }}
+            shape="round"
+            onClick={() => showConfirm(record.id)}
+            disabled={record.status === 3}
+          >
+            Mark As Sold
+          </Button>
+        ),
+      },
+    ];
 
   return (
     <div style={{border: '0px solid ',
