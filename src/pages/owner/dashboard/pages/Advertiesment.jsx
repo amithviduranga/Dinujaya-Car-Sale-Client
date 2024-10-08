@@ -76,7 +76,7 @@ const NewAdvertiesmentRequests = () => {
       setUpdating(true); 
       
       const response = await axios.post(`${apiUrl}advertiesments/updateStatus/${addId}/accept`, {
-        rejectReason: null 
+        rejectReason:null
       });
       
       message.success("Successfully accepted Advertiesment")
@@ -90,6 +90,33 @@ const NewAdvertiesmentRequests = () => {
       setIsUpdateModalVisible(false);
     }
   };
+
+  const handleReject = (vehicle) => {
+    Modal.confirm({
+      title: 'Are you sure you want to reject this advertisement?',
+      content: 'This action cannot be undone.',
+      onOk: async () => {
+        try {
+          setLoading(true);
+          await axios.post(`${apiUrl}advertiesments/updateStatus/${vehicle.id}/reject`, {
+            rejectReason: 'Reason for rejection', // You can modify or prompt for a reason
+          });
+
+          message.success('Advertisement rejected successfully');
+          fetchVehicles(); // Refresh vehicle list after rejection
+        } catch (error) {
+          console.error('Error rejecting advertisement:', error);
+          message.error('Failed to reject advertisement');
+        } finally {
+          setLoading(false);
+        }
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+
+  }
 
   const showModal = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -132,12 +159,13 @@ const NewAdvertiesmentRequests = () => {
       render: (text, record) => (
         <span style={{display:'flex',marginRight:10}}>
           <Button
-        style={{ backgroundColor: 'red', color: 'white',marginRight:10}}
-        shape="round"
-        icon={<CloseOutlined   />}
-      >
-        Reject
-      </Button>
+            style={{ backgroundColor: 'red', color: 'white', marginRight: 10 }}
+            shape="round"
+            icon={<CloseOutlined />}
+            onClick={() => handleReject(record)}
+          >
+            Reject
+          </Button>
       <Button
         style={{  color: 'white',marginRight:10}}
         shape="round"
