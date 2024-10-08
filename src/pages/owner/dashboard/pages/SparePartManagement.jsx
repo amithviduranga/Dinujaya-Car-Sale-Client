@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Table, Form, Input, message,Select } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined,ExclamationCircleOutlined  } from '@ant-design/icons';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
+const { confirm } = Modal;
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -30,6 +31,7 @@ const SparePartManagement = () => {
         console.error('There was an error fetching the spare parts:', error);
       });
   };
+  
 
   const handleEdit = (id) => {
     const sparePart = spareParts.find(sp => sp.id === id);
@@ -47,7 +49,28 @@ const SparePartManagement = () => {
   };
 
   const handleDelete = (id) => {
-    console.log('Delete vehicle', id);
+    confirm({
+      title: 'Are you sure you want to delete this spare part?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'This action cannot be undone.',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        axios.delete(`${apiUrl}spare-part/DeleteSaprePart/${id}`)
+          .then(() => {
+            message.success('Spare part deleted successfully');
+            fetchSpareParts(); // Refresh the table after successful delete
+          })
+          .catch(error => {
+            console.error('There was an error deleting the spare part:', error);
+            message.error('Failed to delete spare part');
+          });
+      },
+      onCancel() {
+        console.log('Delete cancelled');
+      },
+    });
   };
 
   const handleSearch = (e) => {

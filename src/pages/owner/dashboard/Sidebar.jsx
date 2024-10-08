@@ -41,11 +41,7 @@ const Sidebar= ({ onMenuClick })=>{
   icon:<CommentOutlined />,
   label:'Live Chats'
 },
-     {
-    
-      icon:<LoginOutlined />,
-      label:'LogOut'
-   },
+     
        
        ]}/>
      </>

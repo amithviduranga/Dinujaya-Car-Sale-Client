@@ -25,6 +25,7 @@ export default function App() {
       if(role ==="ADMIN"){
         navigate("/admin/dashboard")
         message.success(`Welcome ${values.username},   Login successful!`);
+        localStorage.setItem("AdminUsername",values.username)
       }
       // Store the token (e.g., in localStorage)
       localStorage.setItem("token", accessToken);
