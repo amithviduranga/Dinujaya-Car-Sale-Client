@@ -4,6 +4,7 @@ import { CarOutlined, ToolOutlined, UnorderedListOutlined, UploadOutlined, EditO
 import axios from 'axios';
 import QRCode from 'qrcode';
 import dayjs from 'dayjs';
+import CustomYardMap from '../utility/CustomeYardMap';
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -26,17 +27,24 @@ const NavigationBar = ({ onMenuClick }) => (
 
 const ListNewVehicleForm = () => {
   const [form] = Form.useForm();
+  const [selectedYard, setSelectedYard] = useState(null);; 
   const [mainImage, setMainImage] = useState(null);
   const [additionalImages, setAdditionalImages] = useState(Array(6).fill(null));
   const [qrCodeData, setQrCodeData] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
 
+  console.log("Selected yard : " ,selectedYard)
+
   const onFinish = async (values) => {
-    console.log('Form values:', values);
+    const vehicleValues = {
+      ...values,
+      selectedYard: selectedYard ? selectedYard : 'No yard selected',
+    };
+    console.log('Form values:', vehicleValues);
 
     const formData = new FormData();
-    formData.append('vehicle', new Blob([JSON.stringify(values)], { type: 'application/json' }));
+    formData.append('vehicle', new Blob([JSON.stringify(vehicleValues)], { type: 'application/json' }));
     if (mainImage) {
       formData.append('mainImage', mainImage.originFileObj);
     }
@@ -204,7 +212,16 @@ const ListNewVehicleForm = () => {
             </Col>
           </Row>
         </Card>
-
+        {/* Map Section to select the yard for the vehicle */}
+      <Card type="inner" title="Select Yard Location">
+        <CustomYardMap setSelectedYard={setSelectedYard} />
+        {selectedYard && (
+          <div style={{ marginTop: '10px' }}>
+            <b>Selected Yard:</b> {selectedYard}
+          </div>
+        )}
+      </Card>
+    
         <Card type="inner" title="Upload Vehicle Images" style={{ border: '0px solid ', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0.1, 0.1)', fontSize: 20, marginTop: 24 }}>
             <div style={{ marginBottom: 24 }}>
               <Dragger

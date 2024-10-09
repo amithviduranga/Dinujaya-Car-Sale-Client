@@ -5,6 +5,7 @@ import axios from 'axios';
 import { CarOutlined, DashboardOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import { BsFuelPumpDiesel } from "react-icons/bs";
 import './VehicleDetails.css';
+import YardMap from '../owner/dashboard/utility/yardMap';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const { Content } = Layout;
@@ -14,6 +15,7 @@ const VehicleDetail = () => {
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [selectedYard, setSelectedYard] = useState(null)
 
   useEffect(() => {
     fetchVehicle();
@@ -24,6 +26,7 @@ const VehicleDetail = () => {
     try {
       const response = await axios.get(`${apiUrl}vehicle/${id}`);
       setVehicle(response.data);
+      setSelectedYard(response.data.selectedYard);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching vehicle:', error);
@@ -122,7 +125,28 @@ const VehicleDetail = () => {
               </Col>
             </Row>
           </Card>
+         
+     
         </div>
+        <div style={{ textAlign: 'center', marginTop: '50px', justifyContent: 'center', width: '100%' }}>
+  <h2>LOCATE YOUR VEHICLE</h2>
+  <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+    <Card style={{
+      width: '80%',
+      border: '1px solid',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.6)',
+    }}>
+      <YardMap selectedYard={selectedYard} setSelectedYard={setSelectedYard} />
+      {selectedYard && (
+        <div style={{ marginTop: '10px' }}>
+          <b>This Vehicle is located at yard : </b> {selectedYard}
+        </div>
+      )}
+    </Card>
+  </div>
+</div>
+        
         {vehicle.modelURL && (
           <div style={{ textAlign: 'center', marginTop: '50px' }}>
             <h2>ROTATE YOUR VEHICLE FOR BETTER EXPERIENCE</h2>
@@ -140,6 +164,7 @@ const VehicleDetail = () => {
               >
               </iframe>
             </div>
+           
           </div>
         )}
       </Content>
