@@ -89,7 +89,7 @@ const NavigationBar = () => {
             fontWeight: 600,
           }}
         >
-          DINUJAYA CAR SALE
+          Dinujaya CAR SALE
         </Menu.Item>
         <Menu.Item
           key="1"

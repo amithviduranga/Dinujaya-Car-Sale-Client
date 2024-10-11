@@ -263,9 +263,9 @@ const MainPage = () => {
             <div>
             </div>
             </div>
-           <span style={{fontFamily: ' Arial, sans-serif', 
-  fontSize: '15px', 
+           <span style={{
   flex: 1,
+  fontSize:17,
           position: 'relative',
           height: '100%',
   padding: '0px 90px 0px 90px',

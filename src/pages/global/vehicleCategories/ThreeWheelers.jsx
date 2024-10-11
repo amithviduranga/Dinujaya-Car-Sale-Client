@@ -74,12 +74,12 @@ const ThreeWheelers = () => {
       <Layout>
         <Content style={{ padding: '0 100px' }}>
           <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h2>EXPLORE YOUR DREAM BIKE</h2>
+            <h2>EXPLORE YOUR DREAM WHEEL</h2>
             <p style={{ fontSize: '24px', color: '#888' }}>Check out the latest vehicles added to our collection....</p>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: "20px" }}>
             <Search
-              placeholder="Search In Vans...."
+              placeholder="Search In Wheels...."
               enterButton="Search"
               size="large"
               style={{
