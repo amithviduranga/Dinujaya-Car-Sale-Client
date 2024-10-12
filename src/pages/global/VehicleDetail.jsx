@@ -100,21 +100,21 @@ const VehicleDetail = () => {
                 </Row>
               </Col>
               <Col style={{ marginLeft: 40 }} span={10}>
-                <h2 style={{ marginBottom: 1 }}>{vehicle.modelName} {vehicle.brandName} {vehicle.manufactureYear} {vehicle.fuelType}</h2>
+                <h2 style={{ marginBottom: 1,fontSize:28}}>{vehicle.modelName} {vehicle.brandName} {vehicle.manufactureYear} {vehicle.fuelType}</h2>
                 <p style={{ fontSize: 18, marginTop: 1, fontWeight: 600, color: "gray" }}>{vehicle.description}</p>
-                <p style={{ fontSize: 23 }}>
+                <p style={{ fontSize: 21, marginTop:28 }}>
                   <DashboardOutlined style={{ marginRight: 8, fontSize: 30 }} /> Mileage:
                   <span style={{ fontWeight: 'bold' }}> {vehicle.mileage} km </span>
                 </p>
-                <p style={{ fontSize: 23 }}>
+                <p style={{ fontSize: 21 }}>
                   <CarOutlined style={{ marginRight: 8, fontSize: 30 }} />Condition:
                   <span style={{ fontWeight: 'bold' }}> {vehicle.vehicleCondition}</span>
                 </p>
-                <p style={{ fontSize: 23 }}>
+                <p style={{ fontSize: 21 }}>
                   <BsFuelPumpDiesel style={{ marginRight: 8, fontSize: 30 }} />Fuel Type:
                   <span style={{ fontWeight: 'bold' }}> {vehicle.fuelType}</span>
                 </p>
-                <p style={{ fontWeight: 600, fontSize: 30, color: "green" }}> RS : {vehicle.price}</p>
+                <p style={{ fontWeight: 600, fontSize: 30, color: "green" ,marginTop:25}}> RS : {vehicle.price}</p>
                 <Button
                   type="primary"
                   icon={isWishlisted ? <HeartFilled /> : <HeartOutlined />}

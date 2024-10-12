@@ -94,20 +94,34 @@ const AdvertisementDetail = () => {
           </Row>
         </Col>
         <Col xs={24} md={12}>
-          <p style={{color:'Green',fontSize:50,fontWeight:500}}> Rs. {advertisement.price}</p>
-          <p style={{fontSize:20,fontWeight:400 ,fontFamily: 'Arial, sans-serif' }}><span style={{color:'grey',fontStyle: 'italic'}}>Location :    </span> <strong>{advertisement.location}</strong> </p>
-          <p style={{fontSize:20,fontWeight:400 ,fontFamily: 'Arial, sans-serif' }}><span style={{color:'grey',fontStyle: 'italic'}}>Color :    </span> <strong>{advertisement.location}</strong> </p>
-          <p style={{fontSize:20,fontWeight:400 ,fontFamily: 'Arial, sans-serif' }}><span style={{color:'grey',fontStyle: 'italic'}}>Manufactured Year :    </span> <strong>{advertisement.manufactureYear}</strong> </p>
-          <p style={{fontSize:20,fontWeight:400 ,fontFamily: 'Arial, sans-serif' }}><span style={{color:'grey',fontStyle: 'italic'}}>Registered Year  :    </span> <strong>{advertisement.registeredYear}</strong> </p>
-          <p style={{fontSize:20,fontWeight:400 ,fontFamily: 'Arial, sans-serif' }}><span style={{color:'grey',fontStyle: 'italic'}}>Condition :     </span> <strong>{advertisement.vehicle_Condition}</strong> </p>
-          <p style={{fontSize:20,fontWeight:400 ,fontFamily: 'Arial, sans-serif' }}><span style={{color:'grey',fontStyle: 'italic'}}>Contact No :    </span> <strong>{advertisement.contactNo}</strong> </p>
-          <p style={{fontSize:20,fontWeight:400 ,fontFamily: 'Arial, sans-serif' }}><span style={{color:'grey',fontStyle: 'italic'}}>Millage :     </span> <strong>{advertisement.mileage}</strong> </p>
-          <p style={{fontSize:20,fontWeight:400 ,fontFamily: 'Arial, sans-serif' }}><span style={{color:'grey',fontStyle: 'italic'}}>Vehicle Category   :   </span> <strong>{advertisement.category}</strong> </p>
+  <p style={{ color: 'Green', fontSize: 50, fontWeight: 500 }}>Rs. {advertisement.price}</p>
+
+  <div style={{ marginBottom: '10px' }}>
+    {[
+      { label: 'Location', value: advertisement.location },
+      { label: 'Color', value: advertisement.color },
+      { label: 'Manufactured Year', value: advertisement.manufactureYear },
+      { label: 'Registered Year', value: advertisement.registeredYear },
+      { label: 'Condition', value: advertisement.vehicle_Condition },
+      { label: 'Contact No', value: advertisement.contactNo },
+      { label: 'Mileage', value: advertisement.mileage },
+      { label: 'Vehicle Category', value: advertisement.category }
+    ].map(item => (
+      <div style={{ display: 'flex', margin: '5px 0' }} key={item.label}>
+        <span style={{ color: 'grey', width: '200px', fontSize: 20, fontWeight: 400, fontFamily: 'Arial, sans-serif' }}>{item.label}:</span>
+        <strong style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Arial, sans-serif' }}>{item.value}</strong>
+      </div>
+    ))}
+  </div>
+
+  <p style={{ fontSize: 22, fontWeight: 400, fontFamily: 'Arial, sans-serif', marginTop: 40 }}>
+    <strong>Description</strong> <br /> {advertisement.description}
+  </p>
+</Col>
 
 
-          <p style={{fontSize:22,fontWeight:400 ,fontFamily: 'Arial, sans-serif', marginTop:40 }}> <strong>Description</strong> <br/> {advertisement.description}</p>
-          {/* Add more details as needed */}
-        </Col>
+
+
       </Row>
     </Card>
     <Modal visible={isModalVisible} footer={null} onCancel={handleCancel}>

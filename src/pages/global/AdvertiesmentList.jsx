@@ -24,23 +24,24 @@ const AdvertisementList = () => {
     axios.get(`${apiUrl}advertiesments/getAllAdvertiesments`)
       .then(response => {
         const successfulAds = response.data.filter(ad => ad.status === 1);
-       
         setAdvertisements(successfulAds);
         setFilteredAdvertisements(successfulAds); // Initially display all successful ads
       })
       .catch(error => console.error('Error fetching advertisements:', error));
   }, []);
 
+  console.log(advertisements)
+  
   // Handle applying the filters when the button is clicked
   const applyFilters = () => {
     const filtered = advertisements.filter(ad =>
-      (tempFilters.model ? ad.modelName.toLowerCase().includes(tempFilters.model.toLowerCase()) : true) ||
-      (tempFilters.location ? ad.location.toLowerCase().includes(tempFilters.location.toLowerCase()) : true) ||
-      (tempFilters.color ? ad.color.toLowerCase() === tempFilters.color.toLowerCase() : true) ||
+      (tempFilters.model ? ad.modelName.toLowerCase().includes(tempFilters.model.toLowerCase()) : true) &&
+      (tempFilters.location ? ad.location.toLowerCase().includes(tempFilters.location.toLowerCase()) : true) &&
+      (tempFilters.color ? ad.color.toLowerCase() === tempFilters.color.toLowerCase() : true) &&
       (ad.price >= tempFilters.priceRange[0] && ad.price <= tempFilters.priceRange[1])
     );
     setFilteredAdvertisements(filtered);
-    setFilters(tempFilters);
+    setCurrentPage(1); // Reset to the first page on filter change
   };
 
   const handleFilterChange = (key, value) => {
@@ -61,54 +62,60 @@ const AdvertisementList = () => {
       <Content style={{ marginLeft: 80, marginRight: 80 }}>
         <Row gutter={[18, 16]}>
           <Col xs={24} sm={10} md={8}>
-          <Card style={{marginTop:15}}>
-            <div>
-              <h3>Filter By</h3>
-              <h4>Vehicle Model</h4>
-              <Input
-                placeholder="Vehicle Model"
-                value={tempFilters.model}
-                onChange={e => handleFilterChange('model', e.target.value)}
-                style={{ marginBottom: '10px' }}
-              />
-              <h4>Vehicle Location</h4>
-              <Input
-                placeholder="Location"
-                value={tempFilters.location}
-                onChange={e => handleFilterChange('location', e.target.value)}
-                style={{ marginBottom: '10px' }}
-              />
-              <h4>Vehicle Color</h4>
-              <Input
-                placeholder="Color"
-                value={tempFilters.color}
-                onChange={e => handleFilterChange('color', e.target.value)}
-                style={{ marginBottom: '10px' }}
-              />
-              <h4>Vehicle Price</h4>
-              <Slider
-                range
-                step={10000}
-                defaultValue={tempFilters.priceRange}
-                min={0}
-                max={10000000}
-                onChange={value => handleFilterChange('priceRange', value)}
-                style={{ marginBottom: '10px' }}
-              />
-              <Button
-                type="primary"
-                style={{ backgroundColor: 'red', borderColor: 'red' }}
-                onClick={applyFilters}
-              >
-                Filter
-              </Button>
-            </div>
+            <Card style={{ marginTop: 15 }}>
+              <div>
+                <h3>Filter By</h3>
+                <h4>Vehicle Model</h4>
+                <Input
+                  placeholder="Vehicle Model"
+                  value={tempFilters.model}
+                  onChange={e => handleFilterChange('model', e.target.value)}
+                  style={{ marginBottom: '10px' }}
+                />
+                <h4>Vehicle Location</h4>
+                <Input
+                  placeholder="Location"
+                  value={tempFilters.location}
+                  onChange={e => handleFilterChange('location', e.target.value)}
+                  style={{ marginBottom: '10px' }}
+                />
+                <h4>Vehicle Color</h4>
+                <Input
+                  placeholder="Color"
+                  value={tempFilters.color}
+                  onChange={e => handleFilterChange('color', e.target.value)}
+                  style={{ marginBottom: '10px' }}
+                />
+                <h4>Vehicle Price</h4>
+                <Slider
+                  range
+                  step={10000}
+                  value={tempFilters.priceRange}
+                  min={0}
+                  max={10000000}
+                  onChange={value => handleFilterChange('priceRange', value)}
+                  style={{ marginBottom: '10px' }}
+                />
+                <Button
+                  type="primary"
+                  style={{ backgroundColor: 'red', borderColor: 'red' }}
+                  onClick={applyFilters}
+                >
+                  Filter
+                </Button>
+              </div>
             </Card>
           </Col>
           <Col xs={20} sm={16} md={15}>
             <Row gutter={[5, 5]}>
               {paginatedAdvertisements.map(ad => {
                 const mainImage = ad.images.find(image => image.mainImage) || ad.images[0];
+
+                const formattedDate = new Date(ad.createdOn).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                });
                 return (
                   <Col key={ad.id} xs={24}>
                     <Link to={`/advertiesments/details/${ad.id}`}>
@@ -145,9 +152,11 @@ const AdvertisementList = () => {
                           <Col xs={14} style={{ fontSize: 20 }}>
                             <div style={{ marginBottom: '15px' }}>
                               <h3 style={{ fontSize: '24px', margin: 0 }}>{ad.modelName} {ad.brandName} {ad.fuelType} {ad.manufactureYear}</h3>
-                              <p style={{ fontSize: 18 }}>{`Price: ${ad.price}`}</p>
+                              <p style={{ fontSize: 20,fontFamily:"sans-serif" ,fontWeight:800,color: 'green' }}>{`Price: ${ad.price}`}</p>
+
+                              <p style={{ fontSize: 20 }}>Location: {ad.location}</p>
                             </div>
-                            <p style={{ fontSize: 20 }}>Location: {ad.location}</p>
+                            <h3 style={{ fontStyle: 'italic' , fontSize: '15px', color:'grey', margin: 0 }}>Posted on :  {formattedDate}</h3>
                           </Col>
                         </Row>
                       </Card>
