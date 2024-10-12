@@ -21,23 +21,27 @@ const Sidebar= ({ onMenuClick })=>{
           key:'1',
           icon:<UserOutlined />,
           label:'Dashboard'
-       },
-       {
+       },{
         key:'2',
+        icon:<ProfileOutlined />,
+        label:'Sell A Vehicle'
+     },
+       {
+        key:'3',
         icon:<ProfileOutlined />,
         label:'List Vehicles'
      },
      {
-      key:'3',
+      key:'4',
       icon:<ToolOutlined />,
       label:'Spare Parts'
    },
    {
-    key:'4',
+    key:'5',
     icon:<UnorderedListOutlined />,
     label:'Advertiesments'
  }, {
-  key:'5',
+  key:'6',
   icon:<CommentOutlined />,
   label:'Live Chats'
 },

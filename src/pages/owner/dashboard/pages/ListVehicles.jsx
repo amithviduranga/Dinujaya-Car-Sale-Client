@@ -1,6 +1,6 @@
 import React, { useState ,useEffect} from 'react';
 import { Layout, Menu, Form, Input, InputNumber, Button, Upload, Row, Col, Card, Modal, Image, Select, Table, message } from 'antd';
-import { CarOutlined, ToolOutlined, UnorderedListOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { CarOutlined, ToolOutlined, UnorderedListOutlined, UploadOutlined, EditOutlined, DeleteOutlined,ExclamationCircleOutlined} from '@ant-design/icons';
 import axios from 'axios';
 import QRCode from 'qrcode';
 import dayjs from 'dayjs';
@@ -309,27 +309,93 @@ const ListNewVehicleForm = () => {
 };
 
 const ShowListedVehicles = () => {
-
+  const { confirm } = Modal;
   const [vehicles, setVehicles] = useState([]);
+  const [editingVehicle, setEditingVehicle] = useState(null); // To store the vehicle being edited
+  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility state
+  const [fileList, setFileList] = useState([]); // Store uploaded images
+  const [form] = Form.useForm();
+
   useEffect(() => {
     fetchVehicles(); // Fetch vehicles data when component mounts
   }, []);
 
   const fetchVehicles = async () => {
     try {
-      const response = await axios.get(`${apiUrl}vehicle`); // Replace 'your_endpoint_url' with your actual endpoint
+      const response = await axios.get(`${apiUrl}vehicle`);
       setVehicles(response.data); // Update vehicles state with data from API response
     } catch (error) {
       console.error('Error fetching vehicles:', error);
     }
   };
 
-  const handleEdit = (id) => {
-    console.log('Edit vehicle', id);
+  const handleEdit = (vehicle) => {
+    setEditingVehicle(vehicle); // Set the selected vehicle for editing
+    form.setFieldsValue({
+      ...vehicle, // Populate the form with the current vehicle data
+    });
+    setFileList(
+      vehicle.images.map((image, index) => ({
+        uid: index, // Provide a unique ID for each image
+        name: `Image ${index + 1}`,
+        status: 'done',
+        url: image.url, // Assuming the image object has a URL property
+      }))
+    );
+    setIsModalVisible(true); // Show the modal
   };
 
   const handleDelete = (id) => {
-    console.log('Delete vehicle', id);
+    confirm({
+      title: 'Are you sure you want to delete this vehicle?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Once deleted, this vehicle and its associated images cannot be recovered.',
+      okText: 'Yes, Delete',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk: async () => {
+        try {
+          await axios.delete(`${apiUrl}vehicle/${id}`);
+          message.success('Vehicle deleted successfully.');
+          fetchVehicles(); // Refetch vehicles to update the list
+        } catch (error) {
+          message.error('Failed to delete vehicle.');
+          console.error('Error deleting vehicle:', error);
+        }
+      },
+      onCancel() {
+        console.log('Delete cancelled');
+      },
+    });
+  };
+
+  const handleUpdateVehicle = async (values) => {
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(values));
+
+    fileList.forEach(file => {
+      if (file.originFileObj) {
+        formData.append('images', file.originFileObj); // Append only the newly uploaded images
+      }
+    });
+
+    try {
+      await axios.put(`${apiUrl}vehicle/${editingVehicle.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }); // Send updated data to the backend
+      message.success('Vehicle updated successfully.');
+      setIsModalVisible(false); // Close the modal
+      fetchVehicles(); // Refresh vehicle list
+    } catch (error) {
+      message.error('Failed to update vehicle.');
+      console.error('Error updating vehicle:', error);
+    }
+  };
+
+  const handleImageUpload = ({ fileList }) => {
+    setFileList(fileList); // Update file list when images are added/removed
   };
 
   const columns = [
@@ -345,16 +411,20 @@ const ShowListedVehicles = () => {
     { title: 'Price(LKR)', dataIndex: 'price', key: 'price' },
     { title: 'Listed On', dataIndex: 'createdOn', key: 'createdOn',
       render: (createdOn) => dayjs(createdOn).format('YYYY-MM-DD'),
-     },
-    {title: 'Listed By', dataIndex: 'createdBy', key: 'createdBy' },
-   
-    {title: 'Modified By', dataIndex: 'modifiedBy', key: 'createdBy' },
+    },
+    { title: 'Listed By', dataIndex: 'createdBy', key: 'createdBy' },
+    { title: 'Modified By', dataIndex: 'modifiedBy', key: 'createdBy' },
     {
       title: 'Actions',
       key: 'actions',
+      width: 200,
       render: (text, record) => (
         <span>
-          <Button icon={<EditOutlined />} onClick={() => handleEdit(record.id)}></Button>
+          {/* <Button
+            style={{ marginRight: 10 }}
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          ></Button> */}
           <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}></Button>
         </span>
       ),
@@ -365,6 +435,53 @@ const ShowListedVehicles = () => {
     <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', marginTop: '24px' }}>
       <h1>Show Listed Vehicles</h1>
       <Table columns={columns} dataSource={vehicles} rowKey="id" />
+
+      <Modal
+        title="Edit Vehicle"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)} // Close modal on cancel
+        okText="Save"
+        onOk={() => form.submit()} // Trigger form submission
+      >
+        <Form form={form} layout="vertical" onFinish={handleUpdateVehicle}>
+          <Form.Item label="Registration Number" name="registrationNumber" rules={[{ required: true, message: 'Please enter the registration number' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Province Code" name="provinceCode" rules={[{ required: true, message: 'Please enter the province code' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Model Name" name="modelName" rules={[{ required: true, message: 'Please enter the model name' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Brand Name" name="brandName" rules={[{ required: true, message: 'Please enter the brand name' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="Color" name="color">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Vehicle Condition" name="vehicleCondition">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Fuel Type" name="fuelType">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Price" name="price" rules={[{ required: true, message: 'Please enter the price' }]}>
+            <Input />
+          </Form.Item>
+          {/* Image Upload Section */}
+          <Form.Item label="Vehicle Images">
+            <Upload
+              listType="picture"
+              fileList={fileList}
+              onChange={handleImageUpload}
+              multiple={true}
+              beforeUpload={() => false} // Prevent automatic upload
+            >
+              <Button icon={<UploadOutlined />}>Upload</Button>
+            </Upload>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
@@ -436,27 +553,28 @@ const SparePartsRecommendation = () => {
   };
 
   const onFinish = async (values) => {
-
-    
     try {
-
-      const vehicleId = values.vehicleRegNo.value;
-      const partId = values.partId;
+      const vehicleId = values.vehicleRegNo.key; // Get the selected vehicle ID
+      const partId = values.partId; // Get the selected part ID
       const payload = {
         reccomondationMonths: values.reccomondationMonths,
         recommendationReason: values.recommendationReason,
       };
-      const response = await axios.post(`${apiUrl}spare-part-recommondation/recommondSparePart/${vehicleId}/${partId}`, payload); // Save recommendation to API
-      message.success("Successfully saved your reccomondation to this vehicle")
-      fetchVehicleRecommendations(values.vehicleRegNo.key);
-      form.resetFields() 
-      setSelectedVehicle(null)// Refresh recommendations list
+      
+      // Post the recommendation to the API
+      const response = await axios.post(`${apiUrl}spare-part-recommondation/recommondSparePart/${vehicleId}/${partId}`, payload);
+      message.success("Successfully saved your recommendation to this vehicle");
+      
+      // Fetch the recommendations for the selected vehicle
+      fetchVehicleRecommendations(vehicleId);
+      
+      form.resetFields(); // Reset the form fields
     } catch (error) {
       console.error('Error saving recommendation:', error);
       alert('Failed to recommend spare part.');
     }
-
-    console.log("rec Ca",values)
+  
+    console.log("rec Ca", values);
   };
 
   const getImageUrlFromBase64 = (base64String) => {

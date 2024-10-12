@@ -6,6 +6,7 @@ import CustomHeader from './Header';
 import Advertiesment from './pages/Advertiesment';
 import Dashboard from './pages/Dashboard';
 import ListVehicles from './pages/ListVehicles';
+import SellVehilce from './pages/SellVehicle';
 import SparePartManagement from './pages/SparePartManagement';
 import './Dashboard.css'
 import AdminChatComponent from './chats/AdminChatComponent';
@@ -23,12 +24,14 @@ const OwnerDashboard = () =>{
         case '1':
            return <Dashboard />;
         case '2':
-           return <ListVehicles />;
+           return <SellVehilce />;
         case '3':
-           return <SparePartManagement />;
+           return <ListVehicles />;
         case '4':
+           return <SparePartManagement />;
+        case '5':
          return <Advertiesment />;
-         case '5':
+         case '6':
          return <AdminChatComponent />;
         default:
           // return <Dashboard />;
