@@ -34,7 +34,12 @@ const MainPage = () => {
     try {
       const response = await axios.get(`${apiUrl}vehicle`);
       const allVehicle = response.data;
-      const filteredVehicles = filterVehiclesByDate(allVehicle, 365).slice(0,10);
+       // Filter vehicles where sold == false
+  const unsoldVehicles = allVehicle.filter(vehicle => vehicle.sold === false);
+  
+  // Further filter vehicles based on the date and limit to 10
+  const filteredVehicles = filterVehiclesByDate(unsoldVehicles, 365).slice(0, 10);
+
       setNewArrivals(filteredVehicles)
       setAllVehicles(response.data);
       setLoading(false); // Update vehicles state with data from API response

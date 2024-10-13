@@ -36,8 +36,9 @@ const Lorries = () => {
   const fetchVehicles = async () => {
     try {
       const response = await axios.get(`${apiUrl}vehicle/category?type=lorry`);
-      setAllVehicles(response.data);
-      setFilteredVehicles(response.data);
+      const unsoldVehicles = response.data.filter(vehicle => vehicle.sold === false);
+      setAllVehicles(unsoldVehicles);
+      setFilteredVehicles(unsoldVehicles);
       setLoading(false); // Update vehicles state with data from API response
     } catch (error) {
       console.error('Error fetching vehicles:', error);

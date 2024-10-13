@@ -2,7 +2,7 @@ import React from "react";
 import {Flex, Menu} from "antd"
 import {FaLeaf} from 'react-icons/fa6'
 import './Dashboard.css'
-import { UserOutlined ,ProfileOutlined,LoginOutlined,UnorderedListOutlined,ToolOutlined,CommentOutlined } from "@ant-design/icons";
+import { UserOutlined ,ProfileOutlined,LoginOutlined,UnorderedListOutlined,ToolOutlined,CommentOutlined, DollarOutlined } from "@ant-design/icons";
 import  Logoimage from '../../../asserts/Dashboard Logo.png'
 
 const Sidebar= ({ onMenuClick })=>{
@@ -23,7 +23,7 @@ const Sidebar= ({ onMenuClick })=>{
           label:'Dashboard'
        },{
         key:'2',
-        icon:<ProfileOutlined />,
+        icon:<DollarOutlined />,
         label:'Sell A Vehicle'
      },
        {

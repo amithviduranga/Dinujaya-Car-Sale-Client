@@ -323,7 +323,8 @@ const ShowListedVehicles = () => {
   const fetchVehicles = async () => {
     try {
       const response = await axios.get(`${apiUrl}vehicle`);
-      setVehicles(response.data); // Update vehicles state with data from API response
+      const unsoldVehicles = response.data.filter(vehicle => vehicle.sold === false);
+      setVehicles(unsoldVehicles);
     } catch (error) {
       console.error('Error fetching vehicles:', error);
     }
@@ -423,7 +424,7 @@ const ShowListedVehicles = () => {
           {/* <Button
             style={{ marginRight: 10 }}
             icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
+            onClick={() => handleEdit(record)}f
           ></Button> */}
           <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}></Button>
         </span>
@@ -504,7 +505,8 @@ const SparePartsRecommendation = () => {
   const fetchVehicles = async () => {
     try {
       const response = await axios.get(`${apiUrl}vehicle`); // Fetch vehicles from API
-      setVehicles(response.data);
+      const unsoldVehicles = response.data.filter(vehicle => vehicle.sold === false);
+      setVehicles(unsoldVehicles);
     } catch (error) {
       console.error('Error fetching vehicles:', error);
     }
