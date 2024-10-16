@@ -33,10 +33,10 @@ const VehicleDetail = () => {
       setLoading(false);
     }
   };
-
+  const userId = localStorage.getItem('userId');
   const checkIfWishlisted = async () => {
     try {
-      const response = await axios.get(`${apiUrl}wishlist/${id}`);
+      const response = await axios.get(`${apiUrl}wishlist/${id}/${userId}`);
       setIsWishlisted(response.data.isWishlisted);
     } catch (error) {
       console.error('Error checking wishlist:', error);
@@ -44,13 +44,16 @@ const VehicleDetail = () => {
   };
 
   const toggleWishlist = async () => {
+     // Assuming userId is stored in local storage
     try {
       if (isWishlisted) {
-        await axios.delete(`${apiUrl}wishlist/${id}`);
+        // Remove from wishlist
+        await axios.delete(`${apiUrl}wishlist/${id}/${userId}`);
       } else {
-        await axios.post(`${apiUrl}wishlist`, { vehicleId: id });
+        // Add to wishlist
+        await axios.post(`${apiUrl}wishlist/${id}/${userId}`);
       }
-      setIsWishlisted(!isWishlisted);
+      setIsWishlisted(!isWishlisted); // Toggle wishlist state
     } catch (error) {
       console.error('Error updating wishlist:', error);
     }
@@ -118,6 +121,7 @@ const VehicleDetail = () => {
                 <Button
                   type="primary"
                   icon={isWishlisted ? <HeartFilled /> : <HeartOutlined />}
+                  style={{ backgroundColor: isWishlisted ? 'red' : undefined }} 
                   onClick={toggleWishlist}
                 >
                   {isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
