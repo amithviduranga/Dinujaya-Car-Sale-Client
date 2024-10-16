@@ -96,6 +96,7 @@ return (
 
       {/* Admin Routes */}
       <Route path='/admin/login' element={<Login />} />
+      
       <Route path='/admin/register' element={<Register />} />
       <Route path='/admin/dashboard' element={ <ProtectedAdminRoute><OwnerDashboard /></ProtectedAdminRoute>} />
     </Routes>

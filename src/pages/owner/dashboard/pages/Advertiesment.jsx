@@ -67,16 +67,18 @@ const NewAdvertiesmentRequests = () => {
     }
   };
 
+  const adminUser = localStorage.getItem('AdminUsername')
   const handleUpdate = async () => {
     if (!vehicleToUpdate) return;
     const addId = vehicleToUpdate.id
 
-    console.log("advertiesment",addId)
+    
     try {
       setUpdating(true); 
       
       const response = await axios.post(`${apiUrl}advertiesments/updateStatus/${addId}/accept`, {
-        rejectReason:null
+        rejectReason:null,
+        modifiedBy:adminUser
       });
       
       message.success("Successfully accepted Advertiesment")
@@ -99,7 +101,8 @@ const NewAdvertiesmentRequests = () => {
         try {
           setLoading(true);
           await axios.post(`${apiUrl}advertiesments/updateStatus/${vehicle.id}/reject`, {
-            rejectReason: 'Reason for rejection', // You can modify or prompt for a reason
+            rejectReason: 'Reason for rejection',
+            modifiedBy:adminUser // You can modify or prompt for a reason
           });
 
           message.success('Advertisement rejected successfully');
@@ -347,6 +350,7 @@ const AcceptedRequests = () => {
 
 
 
+
   const columns = [
     { title: 'Reference No', dataIndex: 'registrationNumber', key: 'registrationNumber' },
     { title: 'Model Name', dataIndex: 'modelName', key: 'modelName' },
@@ -393,6 +397,77 @@ const AcceptedRequests = () => {
   );
 };
 
+const RejectedRequests = () => {
+  const [vehicles, setVehicles] = useState([]);
+  useEffect(() => {
+    fetchVehicles(); // Fetch vehicles data when component mounts
+  }, []);
+
+
+  console.log("vehicles",vehicles)
+  const fetchVehicles = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}advertiesments/getAllAdvertiesments`); 
+      const allAdvertisements = response.data; 
+      const successfulAdvertisements = allAdvertisements.filter(ad => ad.status === 2);
+      setVehicles(successfulAdvertisements); // Update vehicles state with data from API response
+
+    } catch (error) {
+      console.error('Error fetching vehicles:', error);
+    }
+  };
+
+
+
+
+  const columns = [
+    { title: 'Reference No', dataIndex: 'registrationNumber', key: 'registrationNumber' },
+    { title: 'Model Name', dataIndex: 'modelName', key: 'modelName' },
+    { title: 'Brand Name', dataIndex: 'brandName', key: 'brandName' },
+    { title: 'Payment', dataIndex: 'payment', key: 'payment',
+      render: (payment) => (
+        <span style={{
+          backgroundColor: payment === 'success' ? '#79D66F' : payment === 'failed' ? '#8B0000' : 'transparent',
+          color: payment === 'success' || payment === 'failed' ? 'white' : 'black',
+          padding: '3px 5px',
+          borderRadius: '5px',
+          border: '1px solid #3E8137',
+          display: 'flex',
+          
+          alignItems: 'center'
+        }}>
+          {payment === 'success' && <CheckCircleOutlined style={{ marginRight: 5 }} />}
+          {payment === 'failed' && <CloseCircleOutlined style={{ marginRight: 5 }} />}
+          {payment}
+        </span>
+      )
+    },
+    { title: 'Milage (Km)', dataIndex: 'mileage', key: 'mileage' },
+    { title: 'Listed Price(LKR)', dataIndex: 'price', key: 'price' },
+    { title: 'Created On', dataIndex: 'createdOn', key: 'createdOn',
+      render: (createdOn) => dayjs(createdOn).format('YYYY-MM-DD'),
+     },
+    {title: 'Created By', dataIndex: 'createdBy', key: 'createdBy' },
+    {title: 'Rejected By', dataIndex: 'modifiedBy', key: 'modifiedBy' },
+   
+    
+  ];
+
+
+  return (
+    <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', marginTop: '24px' ,border: '0px solid ',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.6)',
+      overflow: 'hidden'}}>
+      <h1>Accepted Requests</h1>
+      <Table  columns={columns} dataSource={vehicles} rowKey="id" />
+  
+    </div>
+  );
+};
+
+
+//-----------------------------------------------------------------------------
 
 
 const Advertiesment = () => {
@@ -406,7 +481,7 @@ const Advertiesment = () => {
       case 'accepted-requests':
         return <AcceptedRequests />;
       case 'rejected-requests':
-        return <NewAdvertiesmentRequests />;
+        return <RejectedRequests />;
       default:
         return <NewAdvertiesmentRequests />;
     }

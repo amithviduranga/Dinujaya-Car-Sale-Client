@@ -21,7 +21,7 @@ export default function App() {
         password: values.password,
       });
       const { accessToken ,role } = response.data;
-
+      console.log('login ',response.data)
       if(role ==="ADMIN"){
         navigate("/admin/dashboard")
         message.success(`Welcome ${values.username},   Login successful!`);
