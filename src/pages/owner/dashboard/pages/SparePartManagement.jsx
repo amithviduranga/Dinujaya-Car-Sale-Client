@@ -9,13 +9,14 @@ const { confirm } = Modal;
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const SparePartManagement = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+ const [isModalVisible, setIsModalVisible] = useState(false);
   const [spareParts, setSpareParts] = useState([]);
   const [filteredSpareParts, setFilteredSpareParts] = useState([]); // State to hold the filtered data
   const [searchKeyword, setSearchKeyword] = useState(''); // State to hold the search keyword
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedSparePart, setSelectedSparePart] = useState(null); // State to hold the selected spare part for editing
   const [form] = Form.useForm();
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     fetchSpareParts();
@@ -31,7 +32,10 @@ const SparePartManagement = () => {
         console.error('There was an error fetching the spare parts:', error);
       });
   };
-  
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]); // Set the selected file
+  };
+
 
   const handleEdit = (id) => {
     const sparePart = spareParts.find(sp => sp.id === id);
@@ -138,17 +142,7 @@ const SparePartManagement = () => {
       dataIndex: 'createdBy',
       key: 'createdBy',
     },
-    {
-      title: 'Modified By',
-      dataIndex: 'modifiedBy',
-      key: 'modifiedBy',
-    },
-    {
-        title: 'Modified On',
-        dataIndex: 'modifiedOn',
-        key: 'modifiedOn',
-        render: (createdOn) => dayjs(createdOn).format('YYYY-MM-DD'),
-      },
+   
     {
       title: 'Actions',
       key: 'actions',
@@ -167,36 +161,48 @@ const SparePartManagement = () => {
   };
 
    console.log("Selected Spare part",selectedSparePart)
-  const handleModalOk = () => {
+   const handleModalOk = () => {
     form.validateFields().then(values => {
+      const formData = new FormData();
+      formData.append('partName', values.partName);
+      formData.append('price', values.price);
+      formData.append('description', values.description);
+      formData.append('qty', values.qty || values.newQty);
+      formData.append('vehicleBrand', values.vehicleBrand);
+      formData.append('vehicleModel', values.vehicleModel);
+      formData.append('itemCode', values.itemCode);
+
+      if (selectedFile) {
+        formData.append('image', selectedFile); // Append the selected image file
+      }
+
       if (isEditMode && selectedSparePart) {
         // Update spare part
-        const updatedSparePart = {
-          ...selectedSparePart,
-          partName: values.partName,
-          price: values.price,
-          description: values.description,
-          newQty: values.newQty,
-        };
-        axios.put(`${apiUrl}spare-part/updateSparePart/${selectedSparePart.id}`, updatedSparePart)
+        axios.put(`${apiUrl}spare-part/updateSparePart/${selectedSparePart.id}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
           .then(response => {
             message.success("Successfully updated the spare part");
             fetchSpareParts(); // Update the spare parts list with the updated entry
             setIsModalVisible(false);
             form.resetFields();
             setSelectedSparePart(null);
+            setSelectedFile(null);
           })
           .catch(error => {
             console.error('There was an error updating the spare part:', error);
           });
       } else {
         // Add new spare part
-        axios.post(`${apiUrl}spare-part/saveSparePart`, values)
+        axios.post(`${apiUrl}spare-part/saveSparePart`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
           .then(response => {
             message.success("Successfully added new spare part into the system");
             fetchSpareParts(); // Update the spare parts list with the new entry
             setIsModalVisible(false);
             form.resetFields();
+            setSelectedFile(null);
           })
           .catch(error => {
             console.error('There was an error adding the spare part:', error);
@@ -206,6 +212,8 @@ const SparePartManagement = () => {
       console.error('Failed to add spare part:', errorInfo);
     });
   };
+
+
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
@@ -218,15 +226,15 @@ const SparePartManagement = () => {
       <div style={{ marginBottom: '1px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 style={{ marginBottom: 60 }}>Spare Part Management</h1>
         <Button type="primary" icon={<PlusOutlined />} style={{ marginTop: 70 }} onClick={handleAddSparePart}>
-Add Spare Part
-</Button>
-</div>
-<Input
-placeholder="Search by any keyword"
-value={searchKeyword}
-onChange={handleSearch}
-style={{ marginBottom: 20 , height:40 , borderColor:"Blue" , }}
-/>
+          Add Spare Part
+        </Button>
+      </div>
+      <Input
+        placeholder="Search by any keyword"
+        value={searchKeyword}
+        onChange={(e) => setSearchKeyword(e.target.value)}
+        style={{ marginBottom: 20, height: 40, borderColor: "Blue" }}
+      />
       <Table columns={columns} dataSource={filteredSpareParts} rowKey="id" />
       <Modal
         title={isEditMode ? "Edit Spare Part Details" : "Add Spare Part Details"}
@@ -254,28 +262,14 @@ style={{ marginBottom: 20 , height:40 , borderColor:"Blue" , }}
           <Form.Item label="Unit Price" name="price" rules={[{ required: true, message: 'Please enter unit price' }]}>
             <Input />
           </Form.Item>
-
-          {isEditMode ? (
-            <>
-            <Form.Item label="Quantity" name="newQty" rules={[{ required: true, message: 'Please enter quantity' }]}>
-            <Input placeholder='Enter your new Qty from this item' />
-           </Form.Item>
-            </>
-          ):(
-            <>
-            <Form.Item label="Quantity" name="qty" rules={[{ required: true, message: 'Please enter quantity' }]}>
-            <Input/>
-           </Form.Item>
-            </>
-
-          )
-          
-          
-          }
-
-          
+          <Form.Item label="Quantity" name={isEditMode ? 'newQty' : 'qty'} rules={[{ required: true, message: 'Please enter quantity' }]}>
+            <Input />
+          </Form.Item>
           <Form.Item label="Description" name="description">
             <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item label="Upload Image" name="image">
+            <Input type="file" onChange={handleFileChange} />
           </Form.Item>
         </Form>
       </Modal>

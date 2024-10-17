@@ -150,7 +150,7 @@ const NavigationBar = () => {
             fontWeight: 600,
           }}
         >
-          Spare Parts
+          <Link to="/spareParts">spareParts</Link>
         </Menu.Item>
       </Menu>
       <Button
